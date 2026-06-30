@@ -2,6 +2,20 @@
 
 Next.js (App Router) frontend for browsing PHILHARMONIC clusters.
 
+## Repo layout
+
+The preprocessing code (`preprocessing/`) lives in this repo. The bulk inputs and
+generated outputs deliberately live **one level up, outside the repo**, so they
+aren't committed:
+
+```
+<workdir>/
+  db-visualizer/       ← this repo (frontend + preprocessing/)
+  example_data/        ← raw per-species pipeline outputs (not committed)
+  preprocessed_data/   ← generated compact JSON the frontend reads (not committed)
+  .venv/               ← python venv for preprocessing (not committed)
+```
+
 ## Data source
 
 `src/lib/data.ts` resolves data in one of two ways:
@@ -11,12 +25,15 @@ Next.js (App Router) frontend for browsing PHILHARMONIC clusters.
 - **Production:** set `NEXT_PUBLIC_DATA_BASE_URL` to an `http(s)://` base (e.g. the
   Cloudflare R2 public URL) and it fetches over the network instead.
 
-Generate the local data first (from the repo root):
+Generate the local data first — run from the **workdir** (the parent of this repo,
+where `example_data/`, `preprocessed_data/`, and `.venv/` live):
 
 ```bash
-.venv/bin/python preprocessing/preprocess.py GCF_000002765.6 example_data/GCF_000002765.6 preprocessed_data
-.venv/bin/python preprocessing/build_index.py preprocessed_data
+.venv/bin/python db-visualizer/preprocessing/preprocess.py GCF_000002765.6 example_data/GCF_000002765.6 preprocessed_data
+.venv/bin/python db-visualizer/preprocessing/build_index.py preprocessed_data
 ```
+
+For the bulk cluster job and full setup, see `preprocessing/cluster_setup.md`.
 
 ## Run
 
