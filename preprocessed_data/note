@@ -1,0 +1,2 @@
+There needs to be a non-empty species_index.json here during the build to prompt Next.js to create the species pages
+But the actual data are only needed in the deployment.

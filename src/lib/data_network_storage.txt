@@ -10,23 +10,33 @@ import type {
 
 /**
  * Data source resolution:
- * - In the browser: Fetch relatively from the co-located AFS volume.
- * - At build time: Read directly from the local filesystem path.
+ *   - If NEXT_PUBLIC_DATA_BASE_URL starts with http(s), fetch over the network
+ *     (the eventual R2 / object-store setup).
+ *   - Otherwise treat DATA_DIR (or the default sibling `preprocessed_data`) as a
+ *     local filesystem root and read directly. This is the local-dev path.
+ *
+ * All loaders run in Server Components, so filesystem access is fine.
  */
 
-const HTTP_BASE =
-  process.env.NEXT_PUBLIC_DATA_BASE_URL ||
-  (typeof window !== "undefined" 
-    ? `${window.location.origin}${window.location.pathname.split('/')[1] === 'philharmonicDB' ? '/philharmonicDB' : '/db-visualizer'}/preprocessed_data`
-    : "");
+// 1. Point this directly to your high-capacity storage machine path
+export const GIANT_SERVER_URL = "https://giant.csail.mit.edu/philharmonicDB/preprocessed_data";
+
+// 2. Wrap it in a public CORS proxy ONLY when running in the live browser
+const HTTP_BASE = typeof window !== "undefined"
+  ? `https://corsproxy.io/?${encodeURIComponent(GIANT_SERVER_URL)}`
+  : process.env.NEXT_PUBLIC_DATA_BASE_URL || "";
 
 const USE_HTTP = typeof window !== "undefined" || /^https?:\/\//.test(HTTP_BASE);
 
 async function getJSON<T>(relPath: string): Promise<T> {
   const clean = relPath.replace(/^\//, "");
-
+  
   if (USE_HTTP) {
-    const url = `${HTTP_BASE.replace(/\/$/, "")}/${clean}`;
+    // When running in the browser, HTTP_BASE acts as our cross-origin bridge
+    const url = typeof window !== "undefined"
+      ? `${HTTP_BASE}/${clean}`
+      : `${HTTP_BASE.replace(/\/$/, "")}/${clean}`;
+      
     const res = await fetch(url);
     if (!res.ok) throw new Error(`fetch ${url} → ${res.status}`);
     return res.json() as Promise<T>;

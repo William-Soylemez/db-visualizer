@@ -21,7 +21,7 @@ export default function GeneSearch({
   }, [accessions, query]);
 
   const go = (accession: string) =>
-    router.push(`/species/${speciesId}/gene/${encodeURIComponent(accession)}`);
+    router.push(`/species/gene?id=${speciesId}&accession=${encodeURIComponent(accession)}`);
 
   return (
     <div className="relative">

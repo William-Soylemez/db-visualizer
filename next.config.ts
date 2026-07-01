@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   // to this app directory so nothing above it is ever watched or traced.
   turbopack: { root: __dirname },
   outputFileTracingRoot: __dirname,
+  output: 'export',
+  basePath: '/philharmonicDB',
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

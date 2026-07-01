@@ -1,30 +1,60 @@
+"use client"; // 1. Direct Next.js to parse this layout as a client view
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useSearchParams } from "next/navigation"; // 2. Migrated away from notFound/params
+import { useEffect, useState, Suspense } from "react"; // 3. Added hook extensions for local state
 import { fetchGoTerms, fetchProteins } from "@/lib/data";
 import { goName, goUrl } from "@/lib/go";
 import Expandable from "@/components/Expandable";
 
-export default async function GenePage({
-  params,
-}: {
-  params: Promise<{ id: string; accession: string }>;
-}) {
-  const { id, accession: raw } = await params;
-  const accession = decodeURIComponent(raw);
+// 4. Cleaned component configuration parameters
+function GeneContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id"); // 5. Isolate taxonomy key (?id=)
+  const rawAccession = searchParams.get("accession") || ""; // 6. Extract raw accession string (?accession=)
+  const accession = decodeURIComponent(rawAccession);
 
-  let proteins, goMap;
-  try {
-    [proteins, goMap] = await Promise.all([fetchProteins(id), fetchGoTerms()]);
-  } catch {
-    notFound();
-  }
-  const protein = proteins[accession];
-  if (!protein) notFound();
+  // 7. Track networking dependencies and entity responses via React states
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [protein, setProtein] = useState<any>(null);
+  const [goMap, setGoMap] = useState<any>(null);
+
+  // 8. Execute browser fetch sequence upon interface mounting
+  useEffect(() => {
+    if (!id || !accession) return;
+
+    setLoading(true);
+    setError(false);
+
+    Promise.all([fetchProteins(id), fetchGoTerms()])
+      .then(([proteinsData, goMapData]) => {
+        const selectedProtein = proteinsData[accession];
+        if (!selectedProtein) {
+          setError(true);
+        } else {
+          setProtein(selectedProtein);
+          setGoMap(goMapData);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(true);
+        setLoading(false);
+      });
+  }, [id, accession]);
+
+  // 9. Boundary validation logic rules
+  if (!id || !accession) return <div className="p-8 text-zinc-500">Missing query variables (id and accession required).</div>;
+  if (loading) return <div className="p-8 text-zinc-500">Loading protein molecular metadata...</div>;
+  if (error || !protein) return <div className="p-8 text-red-500">Requested protein asset details not found for this species block.</div>;
 
   return (
     <div className="space-y-8">
       <div>
-        <Link href={`/species/${id}`} className="text-sm text-emerald-600 hover:underline">
+        {/* 10. FIXED: Navigates cleanly back using parameters query structure */}
+        <Link href={`/species?id=${id}`} className="text-sm text-emerald-600 hover:underline">
           ← {id}
         </Link>
         <h1 className="mt-1 font-mono text-2xl font-semibold tracking-tight">
@@ -39,9 +69,10 @@ export default async function GenePage({
           >
             NCBI protein ↗
           </a>
+          {/* 11. FIXED: Point cluster lookups directly to matching static query route */}
           {protein.cluster_hash && (
             <Link
-              href={`/species/${id}/cluster/${protein.cluster_hash}`}
+              href={`/species/cluster?id=${id}&hash=${protein.cluster_hash}`}
               className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400"
             >
               View cluster ↗
@@ -59,7 +90,7 @@ export default async function GenePage({
             <p className="text-sm text-zinc-400">No GO annotations.</p>
           ) : (
             <Expandable initial={15}>
-              {protein.go_terms.map((gid) => (
+              {protein.go_terms.map((gid: string) => (
                 <div key={gid} className="border-b border-zinc-100 py-1.5 text-sm">
                   <a
                     href={goUrl(gid)}
@@ -84,7 +115,7 @@ export default async function GenePage({
             <p className="text-sm text-zinc-400">No Pfam domains.</p>
           ) : (
             <ul className="space-y-1.5">
-              {protein.pfam.map((pf) => (
+              {protein.pfam.map((pf: string) => (
                 <li key={pf}>
                   <a
                     href={`https://www.ebi.ac.uk/interpro/entry/pfam/${pf}`}
@@ -101,5 +132,13 @@ export default async function GenePage({
         </div>
       </section>
     </div>
+  );
+}
+
+export default function GenePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-zinc-500">Loading...</div>}>
+      <GeneContent />
+    </Suspense>
   );
 }

@@ -1,0 +1,155 @@
+"use client";
+
+import Link from "next/link";
+import { useSearchParams } from "next/navigation"; // 2. Changed from notFound/params
+import { useEffect, useState, Suspense } from "react"; // 3. Added for client side state
+import {
+  fetchClusterGraph,
+  fetchClusterSummaries,
+  fetchGeneIndex,
+  fetchSpeciesManifest,
+} from "@/lib/data";
+import { functionColor } from "@/lib/color";
+import { topKEdgesPerNode } from "@/lib/graph";
+import ClusterList from "@/components/ClusterList";
+import GeneSearch from "@/components/GeneSearch";
+import NetworkGraph, { type GraphNode } from "@/components/NetworkGraph";
+
+// 4. Change component definition: remove async, remove old typescript types
+
+function SpeciesContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id"); // 5. Extracts ?id= from URL
+
+  // 6. Define states to hold the asynchronously fetched data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [manifest, setManifest] = useState<any>(null);
+  const [summaries, setSummaries] = useState<any>(null);
+  const [graph, setGraph] = useState<any>(null);
+  const [geneIndex, setGeneIndex] = useState<any>(null);
+
+  // 7. Trigger network fetch sequentially or via Promise.all when the page mounts
+  useEffect(() => {
+    if (!id) return;
+
+    setLoading(true);
+    setError(false);
+
+    Promise.all([
+      fetchSpeciesManifest(id),
+      fetchClusterSummaries(id),
+      fetchClusterGraph(id),
+      fetchGeneIndex(id),
+    ])
+      .then(([manifestData, summariesData, graphData, geneIndexData]) => {
+        setManifest(manifestData);
+        setSummaries(summariesData);
+        setGraph(graphData);
+        setGeneIndex(geneIndexData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(true);
+        setLoading(false);
+      });
+  }, [id]);
+
+  // 8. Handle intermediate edge states
+  if (!id) return <div className="p-8 text-zinc-500">No Species ID provided in URL parameters.</div>;
+  if (loading) return <div className="p-8 text-zinc-500">Loading species data...</div>;
+  if (error || !manifest || !summaries || !graph || !geneIndex) {
+    return <div className="p-8 text-red-500">Species data not found. Check connection or data parameters.</div>;
+  }
+
+  // 9. Process network graphing variables precisely like before
+  const nodes: GraphNode[] = graph.nodes.map((n: any) => ({
+    id: n.id,
+    size: n.size,
+    color: functionColor(n.top_function),
+    href: `/species/cluster?id=${id}&hash=${n.id}`, // 10. FIXED: Changed route format to query string
+  }));
+  
+
+  // The meta-graph is too dense to read (avg degree ~32); show each cluster's
+  // strongest links only so the backbone is legible.
+  const displayEdges = topKEdgesPerNode(graph.edges, 3);
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Link href="/" className="text-sm text-emerald-600 hover:underline">
+            ← All species
+          </Link>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+            {manifest.display_name}
+          </h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            {manifest.n_clusters.toLocaleString()} clusters ·{" "}
+            {manifest.n_proteins.toLocaleString()} proteins
+          </p>
+        </div>
+        {manifest.has_network_download && (() => {
+          // Construct same-origin absolute paths relative to the web root
+          const networkDownloadUrl = `/philharmonicDB/preprocessed_data/species/${manifest.id}/raw/network.positive.tsv.gz`;
+          const medfordDownloadUrl = `/philharmonicDB/preprocessed_data/species/${manifest.id}/${manifest.id}.mfd`;
+
+          return (
+            <div className="flex flex-row items-center gap-2">
+              {/* Left Button: Download MEDFORD */}
+              <a
+                href={medfordDownloadUrl}
+                download={`${manifest.id}.mfd`}
+                className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 hover:border-zinc-300 shadow-sm"
+                title="Download MEDFORD metadata file"
+              >
+                Download MEDFORD
+              </a>
+
+              {/* Right Button: Download Network */}
+              <a
+                href={networkDownloadUrl}
+                download={`network.${manifest.id}.positive.tsv.gz`}
+                className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100 hover:border-emerald-300 shadow-sm"
+                title="Download raw network data"
+              >
+                Download network (TSV.gz)
+              </a>
+            </div>
+          );
+        })()}
+      </div>
+
+      <GeneSearch speciesId={id} geneIndex={geneIndex} />
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">
+          Cluster-of-clusters network
+        </h2>
+        <p className="text-sm text-zinc-500">
+          Each node is a cluster, sized by protein count and colored by predicted
+          function. Showing each cluster&rsquo;s strongest links only. Click a node to
+          open it.
+        </p>
+        <NetworkGraph nodes={nodes} edges={displayEdges} height={520} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">
+          Clusters
+        </h2>
+        <ClusterList speciesId={id} clusters={summaries} />
+      </section>
+    </div>
+  );
+}
+
+export default function SpeciesPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-zinc-500">Loading...</div>}>
+      <SpeciesContent />
+    </Suspense>
+  );
+}

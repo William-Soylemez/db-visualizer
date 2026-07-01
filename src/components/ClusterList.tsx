@@ -67,7 +67,7 @@ export default function ClusterList({
         {sorted.map((c) => (
           <li key={c.hash}>
             <Link
-              href={`/species/${speciesId}/cluster/${c.hash}`}
+              href={`/species/cluster?id=${speciesId}&hash=${c.hash}`}
               className="flex items-start gap-4 px-4 py-3 transition hover:bg-zinc-50"
             >
               <div className="mt-0.5 shrink-0 rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">

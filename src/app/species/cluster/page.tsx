@@ -1,37 +1,65 @@
+"use client"; // 1. Set context to browser execution
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useSearchParams } from "next/navigation"; // 2. Swapped notFound for query params hook
+import { useEffect, useState, Suspense } from "react"; // 3. Added for tracking local state
 import { fetchClusterDetail, fetchGoTerms } from "@/lib/data";
 import { goName, goUrl } from "@/lib/go";
 import NetworkGraph, { type GraphNode } from "@/components/NetworkGraph";
 import Expandable from "@/components/Expandable";
 
-export default async function ClusterPage({
-  params,
-}: {
-  params: Promise<{ id: string; hash: string }>;
-}) {
-  const { id, hash } = await params;
+// 4. Changed definition: removed async and original typescript wrapper
+function ClusterContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id"); // 5. Read species id (?id=)
+  const hash = searchParams.get("hash"); // 6. Read cluster hash (?hash=)
 
-  let cluster, goMap;
-  try {
-    [cluster, goMap] = await Promise.all([fetchClusterDetail(id, hash), fetchGoTerms()]);
-  } catch {
-    notFound();
-  }
+  // 7. Establish React state variables
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [cluster, setCluster] = useState<any>(null);
+  const [goMap, setGoMap] = useState<any>(null);
 
-  const nodes: GraphNode[] = cluster.members.map((m) => ({
+  // 8. Fetch data inside browser when component mounts or search params change
+  useEffect(() => {
+    if (!id || !hash) return;
+
+    setLoading(true);
+    setError(false);
+
+    Promise.all([fetchClusterDetail(id, hash), fetchGoTerms()])
+      .then(([clusterData, goMapData]) => {
+        setCluster(clusterData);
+        setGoMap(goMapData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(true);
+        setLoading(false);
+      });
+  }, [id, hash]);
+
+  // 9. Handle initial boundary states
+  if (!id || !hash) return <div className="p-8 text-zinc-500">Missing query parameters (id and hash required).</div>;
+  if (loading) return <div className="p-8 text-zinc-500">Loading cluster detail...</div>;
+  if (error || !cluster) return <div className="p-8 text-red-500">Cluster or taxonomy data failed to load.</div>;
+
+  // 10. Process downstream graph formats (using flat query path mappings)
+  const nodes: GraphNode[] = cluster.members.map((m: any) => ({
     id: m.accession,
     label: m.accession,
-    href: `/species/${id}/gene/${encodeURIComponent(m.accession)}`,
+    href: `/species/gene?id=${id}&accession=${encodeURIComponent(m.accession)}`, // 11. FIXED: Changed route format
   }));
-  const edges = cluster.graph.map(([source, target, weight]) => ({ source, target, weight }));
+  const edges = cluster.graph.map(([source, target, weight]: [any, any, any]) => ({ source, target, weight }));
 
-  const sortedGo = Object.entries(cluster.all_go_terms).sort((a, b) => b[1] - a[1]);
+  const sortedGo = Object.entries(cluster.all_go_terms).sort((a: any, b: any) => b[1] - a[1]);
 
   return (
     <div className="space-y-8">
       <div>
-        <Link href={`/species/${id}`} className="text-sm text-emerald-600 hover:underline">
+        {/* 12. FIXED: Point back to species query landing string */}
+        <Link href={`/species?id=${id}`} className="text-sm text-emerald-600 hover:underline">
           ← {id}
         </Link>
         <div className="mt-1 flex items-center gap-2">
@@ -85,7 +113,7 @@ export default async function ClusterPage({
             GO terms ({sortedGo.length})
           </h2>
           <Expandable initial={10}>
-            {sortedGo.map(([gid, count]) => (
+            {sortedGo.map(([gid, count]: [string, any]) => (
               <div
                 key={gid}
                 className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-1.5 text-sm"
@@ -111,10 +139,11 @@ export default async function ClusterPage({
             Proteins ({cluster.members.length})
           </h2>
           <Expandable initial={15}>
-            {cluster.members.map((m) => (
+            {cluster.members.map((m: any) => (
               <div key={m.accession} className="border-b border-zinc-100 py-1.5 text-sm">
+                {/* 13. FIXED: Adjusted link string formatting to match query paradigm */}
                 <Link
-                  href={`/species/${id}/gene/${encodeURIComponent(m.accession)}`}
+                  href={`/species/gene?id=${id}&accession=${encodeURIComponent(m.accession)}`}
                   className="font-mono text-emerald-700 hover:underline"
                 >
                   {m.accession}
@@ -136,3 +165,12 @@ export default async function ClusterPage({
     </div>
   );
 }
+
+export default function ClusterPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-zinc-500">Loading...</div>}>
+      <ClusterContent />
+    </Suspense>
+  );
+}
+
