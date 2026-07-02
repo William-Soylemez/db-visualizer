@@ -19,6 +19,7 @@ function GeneContent() {
   const [error, setError] = useState(false);
   const [protein, setProtein] = useState<any>(null);
   const [goMap, setGoMap] = useState<any>(null);
+  const [pfamMap, setPfamMap] = useState<Record<string, string>>({});
 
   // 8. Execute browser fetch sequence upon interface mounting
   useEffect(() => {
@@ -32,18 +33,43 @@ function GeneContent() {
         const selectedProtein = proteinsData[accession];
         if (!selectedProtein) {
           setError(true);
-        } else {
-          setProtein(selectedProtein);
-          setGoMap(goMapData);
+          setLoading(false);
+          return;
         }
+        
+        setProtein(selectedProtein);
+        setGoMap(goMapData);
         setLoading(false);
+
+        // Fetch Pfam details asynchronously so it doesn't block the page rendering
+        if (selectedProtein.pfam && selectedProtein.pfam.length > 0) {
+          fetchPfamNames(selectedProtein.pfam);
+        }
       })
-      .catch((err) => {
-        console.error(err);
-        setError(true);
-        setLoading(false);
-      });
   }, [id, accession]);
+
+  // Helper to fetch descriptive names for all Pfams on this page from InterPro
+  const fetchPfamNames = async (accessions: string[]) => {
+    const maps: Record<string, string> = {};
+    
+    await Promise.all(
+      accessions.map(async (pf) => {
+        try {
+          const res = await fetch(`https://www.ebi.ac.uk/interpro/api/entry/pfam/${pf}/`);
+          if (res.ok) {
+            const data = await res.json();
+            // Extract the standard name (e.g., "Zinc finger, C2H2 type")
+            const name = data.metadata?.name?.name;
+            if (name) maps[pf] = name;
+          }
+        } catch (err) {
+          console.error(`Failed to fetch metadata for Pfam ${pf}:`, err);
+        }
+      })
+    );
+    
+    setPfamMap(maps);
+  };
 
   // 9. Boundary validation logic rules
   if (!id || !accession) return <div className="p-8 text-zinc-500">Missing query variables (id and accession required).</div>;
@@ -90,23 +116,36 @@ function GeneContent() {
             <p className="text-sm text-zinc-400">No GO annotations.</p>
           ) : (
             <Expandable initial={15}>
-              {protein.go_terms.map((gid: string) => (
-                <div key={gid} className="border-b border-zinc-100 py-1.5 text-sm">
-                  <a
-                    href={goUrl(gid)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-emerald-700 hover:underline"
-                  >
-                    {goName(gid, goMap)}
-                  </a>
-                  <span className="ml-2 font-mono text-xs text-zinc-400">{gid}</span>
-                </div>
-              ))}
+              {protein.go_terms.map((gid: string) => {
+                // Look up the name, default to null if not found
+                const termName = goMap?.[gid]?.name || null;
+
+                return (
+                  <div key={gid} className="border-b border-zinc-100 py-1.5 text-sm flex items-baseline gap-2">
+                    {/* The GO ID is ALWAYS the link */}
+                    <a
+                      href={goUrl(gid)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono font-medium text-emerald-700 hover:underline"
+                    >
+                      {gid}
+                    </a>
+                    
+                    {/* The full term name follows in gray only if it exists */}
+                    {termName && (
+                      <span className="text-zinc-400 truncate" title={termName}>
+                        — {termName}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </Expandable>
           )}
         </div>
 
+      {/* Updated Pfam Domains Column */}
         <div className="space-y-3">
           <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">
             Pfam domains ({protein.pfam.length})
@@ -114,20 +153,32 @@ function GeneContent() {
           {protein.pfam.length === 0 ? (
             <p className="text-sm text-zinc-400">No Pfam domains.</p>
           ) : (
-            <ul className="space-y-1.5">
-              {protein.pfam.map((pf: string) => (
-                <li key={pf}>
-                  <a
-                    href={`https://www.ebi.ac.uk/interpro/entry/pfam/${pf}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-mono text-sm text-emerald-700 hover:underline"
-                  >
-                    {pf} ↗
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-1">
+              {protein.pfam.map((pf: string) => {
+                const pfamName = pfamMap[pf] || null;
+
+                return (
+                  <div key={pf} className="border-b border-zinc-100 py-1.5 text-sm flex items-baseline gap-2">
+                    {/* The Accession ID is ALWAYS the primary hyperlink */}
+                    <a
+                      href={`https://www.ebi.ac.uk/interpro/entry/pfam/${pf}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono font-medium text-emerald-700 hover:underline"
+                    >
+                      {pf}
+                    </a>
+
+                    {/* The descriptive name follows in gray only if fetched successfully */}
+                    {pfamName && (
+                      <span className="text-zinc-400 truncate text-xs" title={pfamName}>
+                        — {pfamName}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </section>

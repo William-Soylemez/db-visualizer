@@ -113,24 +113,42 @@ function ClusterContent() {
             GO terms ({sortedGo.length})
           </h2>
           <Expandable initial={10}>
-            {sortedGo.map(([gid, count]: [string, any]) => (
-              <div
-                key={gid}
-                className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-1.5 text-sm"
-              >
-                <a
-                  href={goUrl(gid)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-emerald-700 hover:underline"
+            {sortedGo.map(([gid, count]: [string, any]) => {
+              // Look up the full name using the parsed goMap
+              const termName = goMap?.[gid]?.name || null;
+
+              return (
+                <div
+                  key={gid}
+                  className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-1.5 text-sm"
                 >
-                  {goName(gid, goMap)}
-                </a>
-                <span className="shrink-0 font-mono text-xs text-zinc-400">
-                  {gid} · {count}
-                </span>
-              </div>
-            ))}
+                  {/* Left group: Link ID + Gray Name descriptor */}
+                  <div className="flex items-baseline gap-2 min-w-0">
+                    {/* The GO ID is ALWAYS the clickable link */}
+                    <a
+                      href={goUrl(gid)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono font-medium text-emerald-700 hover:underline shrink-0"
+                    >
+                      {gid}
+                    </a>
+                    
+                    {/* The full term name follows in gray if it exists */}
+                    {termName && (
+                      <span className="text-zinc-400 truncate text-xs" title={termName}>
+                        — {termName}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Right group: Keep the clean occurrence count baseline metric */}
+                  <span className="shrink-0 font-mono text-xs font-medium text-zinc-500 bg-zinc-50 px-1.5 py-0.5 rounded border border-zinc-100">
+                    {count} {count === 1 ? 'gene' : 'genes'}
+                  </span>
+                </div>
+              );
+            })}
           </Expandable>
         </div>
 
