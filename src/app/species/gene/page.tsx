@@ -30,22 +30,33 @@ function GeneContent() {
 
     Promise.all([fetchProteins(id), fetchGoTerms()])
       .then(([proteinsData, goMapData]) => {
-        const selectedProtein = proteinsData[accession];
+let selectedProtein = proteinsData[accession];
+        
+        // TEMPORARY FALLBACK: Until the pipeline is updated, handle missing keys gracefully
         if (!selectedProtein) {
-          setError(true);
-          setLoading(false);
-          return;
+          selectedProtein = {
+            accession: accession,
+            ncbi_url: `https://www.ncbi.nlm.nih.gov/protein/${accession}`,
+            go_terms: [],
+            pfam: [],
+            cluster_hash: null, // Will automatically show the cluster button once the pipeline includes this
+          };
         }
         
         setProtein(selectedProtein);
         setGoMap(goMapData);
         setLoading(false);
 
-        // Fetch Pfam details asynchronously so it doesn't block the page rendering
+        // Fetch Pfam details asynchronously only if any exist
         if (selectedProtein.pfam && selectedProtein.pfam.length > 0) {
           fetchPfamNames(selectedProtein.pfam);
         }
       })
+      .catch((err) => {
+        console.error(err);
+        setError(true);
+        setLoading(false);
+      });
   }, [id, accession]);
 
   // Helper to fetch descriptive names for all Pfams on this page from InterPro
