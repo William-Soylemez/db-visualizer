@@ -8,6 +8,7 @@ import {
   fetchClusterSummaries,
   fetchGeneIndex,
   fetchSpeciesManifest,
+  fetchSpeciesIndex,
 } from "@/lib/data";
 import { functionColor } from "@/lib/color";
 import { topKEdgesPerNode } from "@/lib/graph";
@@ -38,12 +39,24 @@ function SpeciesContent() {
 
     Promise.all([
       fetchSpeciesManifest(id),
+      fetchSpeciesIndex(),
       fetchClusterSummaries(id),
       fetchClusterGraph(id),
       fetchGeneIndex(id),
     ])
-      .then(([manifestData, summariesData, graphData, geneIndexData]) => {
-        setManifest(manifestData);
+      .then(([manifestData, indexData, summariesData, graphData, geneIndexData]) => {
+        const indexMatch = indexData.find((s: any) => s.id === id);
+        // Create a patched manifest by layering the index metadata over it
+        const patchedManifest = {
+          ...manifestData,
+          display_name: indexMatch?.display_name || manifestData.display_name || "",
+          common_name: indexMatch?.common_name || manifestData.common_name || "",
+          assembly_url: indexMatch?.assembly_url || manifestData.assembly_url || "",
+          taxid: indexMatch?.taxid !== undefined && indexMatch?.taxid !== null
+            ? indexMatch.taxid
+            : (manifestData.taxid || null)
+        };
+        setManifest(patchedManifest);
         setSummaries(summariesData);
         setGraph(graphData);
         setGeneIndex(geneIndexData);
