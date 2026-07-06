@@ -33,6 +33,21 @@ function HomeContent() {
     <div className="space-y-10">
       <section className="space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">PHILHARMONIC Database</h1>
+        {/* Highlighted Informational Box */}
+        <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 text-sm text-emerald-950 leading-relaxed max-w-2xl shadow-sm">
+          <div className="font-semibold flex items-center gap-1.5 text-emerald-800 mb-1">
+            <span>✨</span> Quick Notice / Feature Highlight
+          </div>
+          This project is the result of a joint AI for Science collaboration with the
+          UT Austin, sponsored by the National Science Foundation. Please see {" "}
+              <a 
+                href="/philharmonicDB/about/" 
+                className="text-emerald-600 hover:underline"
+              >
+              About
+            </a> for more information. 
+        </div>
+
         <p className="max-w-2xl text-zinc-600 leading-relaxed">
           PHILHARMONIC predicts protein–protein interaction networks from sequence and
           decomposes them into functional clusters. Browse the clusters for each species,
@@ -48,7 +63,6 @@ function HomeContent() {
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {species.map((s) => {
             const hasCommon = s.common_name && s.common_name.trim() !== "";
-            // Adjusted to use s.display_name from your JSON object
             const primaryName = hasCommon ? s.common_name : s.display_name;
             const subName = hasCommon ? s.display_name : s.id;
 
