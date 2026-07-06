@@ -75,6 +75,8 @@ export type SpeciesManifest = {
   n_proteins: number;
   recipe: Record<string, string[]>;
   has_network_download: boolean;
+  common_name?: string;     // Added support for internal species pages
+  assembly_url?: string;    // Added support for internal species pages  
 };
 
 export type SpeciesIndexEntry = {
@@ -82,6 +84,8 @@ export type SpeciesIndexEntry = {
   display_name: string;
   taxid: number | null;
   lineage: string[];
+  common_name?: string;     // Added optional support for common names
+  assembly_url?: string;    // Added optional support for explicit assembly URLs
 };
 
 export type GoTerm = {

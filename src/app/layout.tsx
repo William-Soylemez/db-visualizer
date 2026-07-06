@@ -48,7 +48,7 @@ export default function RootLayout({
                 About
               </Link>
               <a 
-                href="/preprocessed_data/species" 
+                href="/philharmonicDB/preprocessed_data/species" 
                 className="text-zinc-600 hover:text-emerald-600 transition-colors"
               >
                 Downloads
@@ -75,8 +75,7 @@ export default function RootLayout({
               target="_blank"
               rel="noreferrer"
               className="text-emerald-600 hover:underline"
-            >
-              preprint
+            >preprint
             </a>)
           </div>
         </footer>

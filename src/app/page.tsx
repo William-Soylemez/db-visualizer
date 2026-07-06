@@ -64,30 +64,33 @@ function HomeContent() {
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {species.map((s) => {
             const hasCommon = s.common_name && s.common_name.trim() !== "";
+            // Primary big text is always common name if available, otherwise the display name
             const primaryName = hasCommon ? s.common_name : s.display_name;
-            const subName = hasCommon ? s.display_name : s.id;
 
             return (
               <li key={s.id}>
                 <Link
-                  // FIX: Restored static deployment safe URL-query parameter structure (?id=)
                   href={`/species?id=${s.id}`}
-                  className="block rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-emerald-400 hover:shadow-sm h-full"
+                  className="block rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-emerald-400 hover:shadow-sm h-full flex flex-col justify-between"
                 >
-                  {/* Big Text: Common Name (or Display Name if missing) */}
-                  <div className="font-semibold text-base text-zinc-900 tracking-tight line-clamp-1">
-                    {primaryName}
-                  </div>
-                  {/* Little Text: Display/Scientific Name (or Accession ID if missing) */}
-                  <div className="mt-0.5 text-xs text-zinc-500 italic line-clamp-1">
-                    {subName}
-                  </div>
-                  {/* Accession ID footprint label when common name is showing */}
-                  {hasCommon && (
-                    <div className="mt-2 font-mono text-[10px] text-zinc-400 tracking-wider uppercase">
-                      {s.id}
+                  <div>
+                    {/* Big Text: Common Name or Scientific Name */}
+                    <div className="font-semibold text-base text-zinc-900 tracking-tight line-clamp-1">
+                      {primaryName}
                     </div>
-                  )}
+                    
+                    {/* Subtitle: Only show Scientific Name here if a common name exists to push it down */}
+                    {hasCommon && (
+                      <div className="mt-0.5 text-xs text-zinc-500 italic line-clamp-1">
+                        {s.display_name}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Accession ID Footer: ALWAYS Monospace, never italicized */}
+                  <div className="mt-2 font-mono text-[10px] text-zinc-400 tracking-wider uppercase">
+                    {s.id}
+                  </div>
                 </Link>
               </li>
             );
