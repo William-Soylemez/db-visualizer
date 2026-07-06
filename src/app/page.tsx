@@ -36,16 +36,17 @@ function HomeContent() {
         {/* Highlighted Informational Box */}
         <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 text-sm text-emerald-950 leading-relaxed max-w-2xl shadow-sm">
           <div className="font-semibold flex items-center gap-1.5 text-emerald-800 mb-1">
-            <span>✨</span> Quick Notice / Feature Highlight
-          </div>
-          This project is the result of a joint AI for Science collaboration with the
-          UT Austin, sponsored by the National Science Foundation. Please see {" "}
-              <a 
-                href="/philharmonicDB/about/" 
-                className="text-emerald-600 hover:underline"
-              >
-              About
+          <p>
+            This project is the result of a joint AI for Science collaboration with the
+            UT Austin, sponsored by the National Science Foundation. Please see {" "}
+            <a 
+              href="/about" 
+              className="text-emerald-600 hover:underline"
+            >
+            About
             </a> for more information. 
+          </p>
+          </div>
         </div>
 
         <p className="max-w-2xl text-zinc-600 leading-relaxed">
@@ -69,15 +70,19 @@ function HomeContent() {
             return (
               <li key={s.id}>
                 <Link
-                  href={`/species/${s.id}`}
+                  // FIX: Restored static deployment safe URL-query parameter structure (?id=)
+                  href={`/species?id=${s.id}`}
                   className="block rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-emerald-400 hover:shadow-sm h-full"
                 >
+                  {/* Big Text: Common Name (or Display Name if missing) */}
                   <div className="font-semibold text-base text-zinc-900 tracking-tight line-clamp-1">
                     {primaryName}
                   </div>
+                  {/* Little Text: Display/Scientific Name (or Accession ID if missing) */}
                   <div className="mt-0.5 text-xs text-zinc-500 italic line-clamp-1">
                     {subName}
                   </div>
+                  {/* Accession ID footprint label when common name is showing */}
                   {hasCommon && (
                     <div className="mt-2 font-mono text-[10px] text-zinc-400 tracking-wider uppercase">
                       {s.id}

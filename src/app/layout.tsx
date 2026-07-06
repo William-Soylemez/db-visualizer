@@ -48,7 +48,7 @@ export default function RootLayout({
                 About
               </Link>
               <a 
-                href="/philharmonicDB/preprocessed_data/species/" 
+                href="/preprocessed_data/species" 
                 className="text-zinc-600 hover:text-emerald-600 transition-colors"
               >
                 Downloads
@@ -69,7 +69,7 @@ export default function RootLayout({
               className="text-emerald-600 hover:underline"
             >
               PHILHARMONIC pipeline
-            </a>. ( {" "}
+            </a>. ({" "}
             <a
               href="https://www.biorxiv.org/content/10.1101/2024.10.25.620267v3"
               target="_blank"
