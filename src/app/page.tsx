@@ -46,23 +46,33 @@ function HomeContent() {
           Species ({species.length})
         </h2>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {species.map((s) => (
-            <li key={s.id}>
-              {/* 7. Retain your clean query parameters link pattern here */}
-              <Link
-                href={`/species?id=${s.id}`}
-                className="block rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-emerald-400 hover:shadow-sm"
-              >
-                <div className="font-medium">{s.display_name}</div>
-                <div className="mt-1 font-mono text-xs text-zinc-500">{s.id}</div>
-                {s.lineage && s.lineage.length > 0 && (
-                  <div className="mt-2 text-xs text-zinc-400">
-                    {s.lineage.join(" › ")}
+          {species.map((s) => {
+            const hasCommon = s.common_name && s.common_name.trim() !== "";
+            // Adjusted to use s.display_name from your JSON object
+            const primaryName = hasCommon ? s.common_name : s.display_name;
+            const subName = hasCommon ? s.display_name : s.id;
+
+            return (
+              <li key={s.id}>
+                <Link
+                  href={`/species/${s.id}`}
+                  className="block rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-emerald-400 hover:shadow-sm h-full"
+                >
+                  <div className="font-semibold text-base text-zinc-900 tracking-tight line-clamp-1">
+                    {primaryName}
                   </div>
-                )}
-              </Link>
-            </li>
-          ))}
+                  <div className="mt-0.5 text-xs text-zinc-500 italic line-clamp-1">
+                    {subName}
+                  </div>
+                  {hasCommon && (
+                    <div className="mt-2 font-mono text-[10px] text-zinc-400 tracking-wider uppercase">
+                      {s.id}
+                    </div>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

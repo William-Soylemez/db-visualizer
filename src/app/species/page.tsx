@@ -83,10 +83,49 @@ function SpeciesContent() {
           <Link href="/" className="text-sm text-emerald-600 hover:underline">
             ← All species
           </Link>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-            {manifest.display_name}
+{/* Big Header Text: Common (Scientific/Display Name) */}
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-900">
+            {manifest.common_name || manifest.display_name}{" "}
+            {manifest.common_name && (
+              <span className="text-lg font-normal text-zinc-500 italic ml-1">
+                ({manifest.display_name})
+              </span>
+            )}
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          
+          {/* Database & Taxonomy Metadata Badges Link Row */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
+            {manifest.assembly_url && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-zinc-400">Genome Reference:</span>
+                <a 
+                  href={manifest.assembly_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-emerald-700 hover:underline font-medium bg-zinc-100/80 px-1.5 py-0.5 rounded border border-zinc-200/50"
+                >
+                  {id} ↗
+                </a>
+              </div>
+            )}
+
+            {manifest.taxid && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-zinc-400">Taxonomy:</span>
+                <a 
+                  href={`https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=${manifest.taxid}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-emerald-700 hover:underline font-medium bg-zinc-100/80 px-1.5 py-0.5 rounded border border-zinc-200/50"
+                >
+                  TAXID:{manifest.taxid} ↗
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* Counts Line (Preserved exactly) */}
+          <p className="mt-3 text-sm text-zinc-500">
             {manifest.n_clusters.toLocaleString()} clusters ·{" "}
             {manifest.n_proteins.toLocaleString()} proteins
           </p>

@@ -75,16 +75,7 @@ export default function AboutPage() {
           </h3>
           <p className="text-zinc-600 leading-relaxed text-sm">
             On the home page, you will find a catalog of all supported species indexed in our current 
-            data release. Each card details the species name and {" "}
-            <a 
-              href="https://www.ncbi.nlm.nih.gov/datasets/genome/" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="text-emerald-600 hover:underline"
-            >
-              NCBI Genome 
-            </a> accession. 
-            Click on any species card to open its dedicated cluster browser.
+            data release. Click on any species card to open its dedicated cluster browser.
           </p>
         </div>
 
@@ -102,6 +93,16 @@ export default function AboutPage() {
 
             The Species page also contains links to directly download the species-wide predicted PPI network, as well as 
             a MEDFORD-format file summarizing the parameters and corresponding outputs of the PHILHARMONIC pipeline run. 
+
+            Finally, the species page also specifies the {" "}
+            <a 
+              href="https://www.ncbi.nlm.nih.gov/datasets/genome/" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="text-emerald-600 hover:underline"
+            >
+              NCBI Genome 
+            </a> accession used. 
           </p>
         </div>
 
