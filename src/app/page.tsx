@@ -24,6 +24,15 @@ function HomeContent() {
 
   // 5. Fetch the structural species manifest once the browser mounts the view
   useEffect(() => {
+    // check for an existing saved tree state in the browser
+    const savedState = localStorage.getItem("philharmonic_tree_state");
+    if (savedState) {
+      try {
+        setExpandedNodes(JSON.parse(savedState));
+      } catch (e) {
+        console.error("Failed to parse saved taxonomy tree state", e);
+      }
+    }
     fetchSpeciesIndex()
       .then((data) => {
         setSpecies(data);
@@ -55,10 +64,12 @@ function HomeContent() {
   }, []);
 
 // Feature 1: Recursive single-child expansion engine
+  const saveAndSetExpanded = (nextState: Record<string, boolean>) => {
+      setExpandedNodes(nextState);
+      localStorage.setItem("philharmonic_tree_state", JSON.stringify(nextState));
+    };
   const toggleNodeWithAutoExpand = (nodeName: string, targetNode: TaxonomyNode) => {
-    setExpandedNodes((prev) => {
-      const next = { ...prev, [nodeName]: !prev[nodeName] };
-      
+      const next = { ...expandedNodes, [nodeName]: !expandedNodes[nodeName] };      
       // Only auto-expand downwards if we are *opening* the node
       if (next[nodeName]) {
         let current = targetNode;
@@ -69,9 +80,8 @@ function HomeContent() {
           current = current.children[singleChildName];
         }
       }
-      return next;
-    });
-  };
+      saveAndSetExpanded(next);
+    };
 
   // Feature 2: Extract unique clades from dataset for search indices
   const allUniqueClades = Array.from(
@@ -162,14 +172,14 @@ function HomeContent() {
         <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 text-sm text-emerald-950 leading-relaxed max-w-2xl shadow-sm">
           <div className="font-semibold flex items-center gap-1.5 text-emerald-800 mb-1">
           <p>
-            This project is the result of a joint AI for Science collaboration with the
+            This project is the result of a joint AI for Science collaboration with
             UT Austin, sponsored by the National Science Foundation. Please see {" "}
-            <a 
+            <Link 
               href="/about" 
               className="text-emerald-600 hover:underline"
             >
             About
-            </a> for more information. 
+            </Link> for more information. 
           </p>
           </div>
         </div>
@@ -268,19 +278,52 @@ function HomeContent() {
         )}
       </section>
 
-      {/* Dynamic Taxonomy Browser Module Layout */}
-      <section className="space-y-4 max-w-3xl">
-        <div className="border-b border-zinc-200 pb-2">
-          <h2 className="text-lg font-semibold text-zinc-900">Browse by Taxonomy</h2>
-          <p className="text-xs text-zinc-500">Click clades to expand phylogenetic relationships.</p>
-        </div>
-        
-        <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-sm">
-          {taxonomyTree && Object.values(taxonomyTree.children).map((topLevelClade) => (
-            <RenderTaxonomyBranch key={topLevelClade.name} node={topLevelClade} depth={0} />
-          ))}
-        </div>
-      </section>
+      {/* Dynamic Taxonomy Browser Tree */}
+      {!searchQuery && ( //This hides the tree while the search bar is in use
+        <section className="space-y-4 max-w-3xl">
+          <div className="border-b border-zinc-200 pb-2 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-900">Taxonomy Browser</h2>
+              <p className="text-xs text-zinc-500">Click clades to expand phylogenetic relationships. Then, view the list of included species a clade.</p>
+            </div>
+            
+            {/* Expand / Collapse Global Controls */}
+            <div className="flex items-center gap-3 text-xs font-medium text-zinc-500 border-l sm:border-l-0 sm:pl-0 pl-3 border-zinc-200">
+              <button
+                onClick={() => {
+                  // Rebuild a flat dictionary turning EVERY unique clade to true
+                  const next: Record<string, boolean> = {};
+                  species.forEach((s) => {
+                    s.lineage?.forEach((clade: string) => {
+                      next[clade] = true;
+                    });
+                  });
+                  saveAndSetExpanded(next);
+                }}
+                className="hover:text-emerald-700 hover:underline transition"
+              >
+                Expand All
+              </button>
+              <span className="text-zinc-300 pointer-events-none">|</span>
+              <button
+                onClick={() => {
+                  // Collapse everything by wiping the dictionary clean
+                  saveAndSetExpanded({});
+                }}
+                className="hover:text-emerald-700 hover:underline transition"
+              >
+                Collapse All
+              </button>
+            </div>
+          </div>
+          
+          <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-sm">
+            {taxonomyTree && Object.values(taxonomyTree.children).map((topLevelClade) => (
+              <RenderTaxonomyBranch key={topLevelClade.name} node={topLevelClade} depth={0} />
+            ))}
+          </div>
+        </section>
+      )}
 
     </div>
   );

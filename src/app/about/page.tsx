@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AboutPage() {
   return (
     <div className="space-y-8 max-w-3xl">
@@ -40,7 +42,7 @@ export default function AboutPage() {
               className="text-emerald-600 hover:underline"
             >
               Bonnie Berger
-            </a>)) at MIT,
+            </a>) at MIT,
           the Bioinformaics and Computational Biology Group (PI: {" "}
             <a 
               href="https://www.cs.tufts.edu/~cowen/" 
@@ -64,12 +66,12 @@ export default function AboutPage() {
         </p>
 
         <p className="text-zinc-600 leading-relaxed text-sm">
-          To browse the list of available species, <a 
+          To browse the list of available species, <Link 
               href="/species-list" 
               className="text-emerald-600 hover:underline"
             >
               click here
-            </a>. 
+            </Link>. 
         </p>        
       </section>
 

@@ -36,6 +36,12 @@ function SpeciesListContent() {
 
   return (
     <div className="space-y-6">
+      {/* Dynamic Navigation Back Row */}
+      <div>
+        <Link href="/" className="text-sm text-emerald-600 hover:underline inline-flex items-center gap-1">
+          ← Back to taxonomy browser
+        </Link>
+      </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 pb-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
