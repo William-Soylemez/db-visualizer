@@ -19,6 +19,7 @@ function HomeContent() {
     "Eukaryota": true // Start with the top level pre-expanded
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // New focus monitor  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -266,6 +267,9 @@ function HomeContent() {
             placeholder="Search by species common name, scientific name, accession, or clade..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            // Wrap in a tiny timeout so that clicks on dropdown links hit the router before the dropdown vanishes
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
             className="w-full rounded-lg border border-zinc-200 pl-10 pr-4 py-2 text-sm bg-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
           />
           <span className="absolute left-3.5 top-2.5 text-zinc-400 font-mono text-sm pointer-events-none">
@@ -282,7 +286,7 @@ function HomeContent() {
         </div>
 
         {/* Dynamic Search Results Dropdown Overlay */}
-        {searchQuery.trim() !== "" && (
+        {isSearchFocused && searchQuery.trim() !== "" && (
           <div className="absolute z-10 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg max-h-80 overflow-y-auto divide-y divide-zinc-100">
             {!hasSearchResults && (
               <div className="p-4 text-sm text-zinc-500 italic text-center">
@@ -342,7 +346,7 @@ function HomeContent() {
       </section>
 
       {/* Dynamic Taxonomy Browser Tree */}
-      {!searchQuery && ( //This hides the tree while the search bar is in use
+      {!(isSearchFocused && searchQuery.trim() !== "") && ( //This hides the tree while the search bar is in use
         <section className="space-y-4 max-w-3xl">
           <div className="border-b border-zinc-200 pb-2 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
             <div>
