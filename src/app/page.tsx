@@ -83,6 +83,27 @@ function HomeContent() {
       saveAndSetExpanded(next);
     };
 
+  // Highlight matching text helper (Simpler, standard text flow version)
+  const highlightMatch = (text: string, query: string) => {
+    if (!query) return text;
+    const cleanQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const parts = text.split(new RegExp(`(${cleanQuery})`, 'gi'));
+    
+    return (
+      <span className="inline">
+        {parts.map((part, i) => 
+          part.toLowerCase() === query.toLowerCase() ? (
+            <mark key={i} className="bg-emerald-100 text-emerald-950 font-medium px-0 rounded-none inline">
+              {part}
+            </mark>
+          ) : (
+            part
+          )
+        )}
+      </span>
+    );
+  };
+    
   // Feature 2: Extract unique clades from dataset for search indices
   const allUniqueClades = Array.from(
     new Set(species.flatMap((s) => s.lineage || []))
@@ -112,28 +133,38 @@ function HomeContent() {
   // Recursive tree layout compiler component
   const RenderTaxonomyBranch = ({ node, depth = 0 }: { node: TaxonomyNode; depth: number }) => {
     const childKeys = Object.keys(node.children);    
-    const hasChildren = Object.keys(node.children).length > 0;
+    const hasChildren = childKeys.length > 0;
     const isExpanded = expandedNodes[node.name];
+
+    // Find all leaf species belonging to this specific clade
+    // We only display them if this clade has no sub-clades of its own (terminal branch)
+    const directSpeciesMatches = !hasChildren
+      ? species.filter((s) => s.lineage && s.lineage[s.lineage.length - 1] === node.name)
+      : [];
 
     return (
       <div className="select-none">
-        <div className="flex items-center justify-between py-2 border-b border-zinc-100/60 hover:bg-zinc-50/50 px-2 rounded-md transition">
+        <div className="flex items-center justify-between py-1.5 border-b border-zinc-100/60 hover:bg-zinc-50/50 px-2 rounded-md transition">
           <div 
             className="flex items-center gap-2 cursor-pointer flex-1" 
-            onClick={() => hasChildren && toggleNodeWithAutoExpand(node.name, node)}
+            // Expand if it has child clades OR if it contains terminal species records
+            onClick={() => (hasChildren || directSpeciesMatches.length > 0) && toggleNodeWithAutoExpand(node.name, node)}
           >
-            {hasChildren ? (
+            {(hasChildren || directSpeciesMatches.length > 0) ? (
               <span className="text-zinc-400 font-mono text-xs w-4">
                 {isExpanded ? "▼" : "▶"}
               </span>
             ) : (
               <span className="w-4" />
             )}
-            <span className={`text-sm ${hasChildren ? "font-medium text-zinc-800" : "text-zinc-600"}`}>
+            
+            {/* Visual Polish: Keep clades normal, but you can style text here if needed */}
+            <span className={`text-sm ${hasChildren ? "font-medium text-zinc-800" : "text-zinc-700"}`}>
               {node.name}
             </span>
+            
             <span className="text-xs bg-zinc-100 text-zinc-500 font-medium px-1.5 py-0.5 rounded-full">
-              {node.count} species
+              {node.count} {node.count === 1 ? "species" : "species"}
             </span>
           </div>
 
@@ -145,8 +176,9 @@ function HomeContent() {
           </Link>
         </div>
 
+        {/* 1. Render Sub-Clades if they exist */}
         {hasChildren && isExpanded && (
-          <div className="ml-4 pl-3 border-l border-zinc-200 mt-1 space-y-1">
+          <div className="ml-4 pl-3 border-l border-zinc-200 hover:border-emerald-500 transition-colors duration-150 mt-1 space-y-1">
             {Object.values(node.children).map((childBranch) => (
               <RenderTaxonomyBranch 
                 key={childBranch.name} 
@@ -154,6 +186,37 @@ function HomeContent() {
                 depth={depth + 1} 
               />
             ))}
+          </div>
+        )}
+
+        {/* 2. Visual Polish: Render Actual Leaf Species directly inside the tree if expanded */}
+        {!hasChildren && isExpanded && directSpeciesMatches.length > 0 && (
+          <div className="ml-4 pl-3 border-l border-zinc-200 hover:border-emerald-500 transition-colors duration-150 mt-1 space-y-1">
+            {directSpeciesMatches.map((s) => {
+              const hasCommon = s.common_name && s.common_name.trim() !== "";
+              return (
+                <Link
+                  key={s.id}
+                  href={`/species?id=${s.id}`}
+                  className="flex items-baseline justify-between py-1 px-2 rounded hover:bg-zinc-100/70 text-left transition-colors duration-100 group"
+                >
+                  <div className="text-sm text-zinc-600 group-hover:text-zinc-900">
+                    {/* Visual Polish: Italicize the official biological name/common representation */}
+                    <span className="italic font-medium">
+                      {hasCommon ? s.common_name : s.display_name}
+                    </span>
+                    {hasCommon && (
+                      <span className="text-xs text-zinc-400 normal-case ml-2 italic">
+                        ({s.display_name})
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider pl-4">
+                    {s.id}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
@@ -173,12 +236,12 @@ function HomeContent() {
           <div className="font-semibold flex items-center gap-1.5 text-emerald-800 mb-1">
           <p>
             This project is the result of a joint AI for Science collaboration with
-            UT Austin, sponsored by the National Science Foundation. Please see {" "}
+            UT Austin, sponsored by the National Science Foundation. Please see our {" "}
             <Link 
               href="/about" 
-              className="text-emerald-600 hover:underline"
+              className="text-emerald-800 underline decoration-emerald-800/40 hover:text-emerald-950 hover:decoration-emerald-950"
             >
-            About
+            About page
             </Link> for more information. 
           </p>
           </div>
@@ -238,9 +301,9 @@ function HomeContent() {
                     key={clade.name}
                     href={`/species-list?clade=${encodeURIComponent(clade.name)}`}
                     onClick={() => setSearchQuery("")}
-                    className="flex justify-between items-center text-sm px-2 py-1.5 rounded hover:bg-emerald-50 text-zinc-800 hover:text-emerald-900 transition"
+                    className="flex justify-between items-center text-sm px-2 py-1.5 rounded hover:bg-zinc-200/70 text-zinc-800 hover:text-zinc-900 transition-colors duration-100"
                   >
-                    <span className="font-medium">{clade.name}</span>
+                    <span className="font-medium">{highlightMatch(clade.name, searchQuery)}</span>
                     <span className="text-xs text-zinc-400">{clade.count} species →</span>
                   </Link>
                 ))}
@@ -260,14 +323,14 @@ function HomeContent() {
                       key={s.id}
                       href={`/species?id=${s.id}`}
                       onClick={() => setSearchQuery("")}
-                      className="block px-2 py-2 rounded hover:bg-emerald-50 text-left transition"
+                      className="block px-2 py-2 rounded hover:bg-zinc-200/70 text-left transition-colors duration-100"
                     >
                       <div className="text-sm font-medium text-zinc-900 line-clamp-1">
-                        {hasCommon ? s.common_name : s.display_name}
+                        {hasCommon ? highlightMatch(s.common_name, searchQuery) : highlightMatch(s.display_name, searchQuery)}
                       </div>
                       <div className="text-xs text-zinc-500 font-mono flex gap-1.5 items-center mt-0.5">
                         <span className="uppercase">{s.id}</span>
-                        {hasCommon && <span className="italic text-zinc-400">({s.display_name})</span>}
+                        {hasCommon && <span className="italic text-zinc-400">({highlightMatch(s.display_name, searchQuery)})</span>}
                       </div>
                     </Link>
                   );
