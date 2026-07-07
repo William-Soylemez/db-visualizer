@@ -115,7 +115,7 @@ export default function AboutPage() {
             visualization, where each circle represents a cluster of proteins.
             Further, you can browse or filter the list of clusters by their functional annotation and imputed discription/summary. 
             Finally, if you have a specific protein of interest, you can query its accession in the search bar at the 
-            top of each species page. If that protein is assigned to a cluster, it will be recovered by the search and you can do directly to its Protein page.
+            top of each species page. If that protein is assigned to a cluster, it will be recovered by the search and you can go directly to its Protein page.
 
             The Species page also contains links to directly download the species-wide predicted PPI network, as well as 
             a MEDFORD-format file summarizing the parameters and corresponding outputs of the PHILHARMONIC pipeline run. 
@@ -135,7 +135,7 @@ export default function AboutPage() {
         {/* Subsection C: Cluster page */}
         <div className="space-y-2 pl-4 border-l-2 border-zinc-100">
           <h3 className="text-base font-semibold tracking-tight text-zinc-800">
-            2. Species page
+            3. Species page
           </h3>
           <p className="text-zinc-600 leading-relaxed text-sm">
             The cluster is the core output of the PHILHARMONIC pipeline. The cluster page displays key information about each cluster,
@@ -176,7 +176,7 @@ export default function AboutPage() {
             >
               Pfam 
             </a> domains. 
-            This page also links out to the correspodning {" "}
+            This page also links out to the corresponding {" "}
             <a 
               href="https://www.ncbi.nlm.nih.gov/protein/" 
               target="_blank" 
@@ -191,7 +191,7 @@ export default function AboutPage() {
         {/* Subsection D: Protein page */}
         <div className="space-y-2 pl-4 border-l-2 border-zinc-100">
           <h3 className="text-base font-semibold tracking-tight text-zinc-800">
-            4. Downloads
+            5. Downloads
           </h3>
           <p className="text-zinc-600 leading-relaxed text-sm">
             The predicted PPI network for a given species can be downloaded from its Species page.
