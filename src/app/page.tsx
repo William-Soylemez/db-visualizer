@@ -236,8 +236,8 @@ function HomeContent() {
         <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 text-sm text-emerald-950 leading-relaxed max-w-2xl shadow-sm">
           <div className="font-semibold flex items-center gap-1.5 text-emerald-800 mb-1">
           <p>
-            This project is the result of a joint AI for Science collaboration with
-            UT Austin, sponsored by the National Science Foundation. Please see our {" "}
+            This project is the result of a joint AI for Science collaboration between MIT, Tufts, and 
+            UT Austin, funded by the National Science Foundation and the National Institutes of Health. Please see our {" "}
             <Link 
               href="/about" 
               className="text-emerald-800 underline decoration-emerald-800/40 hover:text-emerald-950 hover:decoration-emerald-950"

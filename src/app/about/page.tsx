@@ -1,19 +1,32 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <div className="space-y-8 max-w-3xl">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
+    <div className="max-w-2xl mx-auto space-y-8 py-6">
+      {/* Page Title & Logo Container - Centers text and column children */}
+      <div className="flex flex-col items-center text-center border-b border-zinc-100 pb-8">
+        
+        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 mb-6">
           About PHILHARMONIC DB
         </h1>
+        
         {/*<p className="mt-2 text-sm text-zinc-500">
           Background, documentation, and asset workflows.
         </p>*/}
-      </div>
-
-      <hr className="border-zinc-200" />
+        
+        {/* Added mx-auto to center this responsive box horizontally */}
+        <div className="w-1/2 max-w-xs aspect-square relative">         
+          <Image 
+            src="/philharmonicDB/philharmonic_logo.png" 
+            alt="PHILHARMONIC Logo" 
+            fill // Tells Next.js to fill the 50% width responsive container box completely
+            className="object-contain bg-zinc-50 rounded-2xl p-4 shadow-sm border border-zinc-200/50"
+            priority          
+          />      
+        </div>  
+      
+    </div>
 
       {/* Section 1: Overview */}
       <section className="space-y-3">
@@ -75,7 +88,9 @@ export default function AboutPage() {
         </p>        
       </section>
 
-{/* Section 2: How to use this database */}
+      <hr className="border-zinc-200" />
+
+      {/* Section 2: How to use this database */}
       <section className="space-y-5">
         <h2 className="text-xl font-semibold tracking-tight text-zinc-800">
           How to use this database
@@ -201,6 +216,8 @@ export default function AboutPage() {
         </div>   
       </section>
 
+      <hr className="border-zinc-200" />
+
       {/* Section 3: Contributing */}
       <section className="space-y-3">
         <h2 className="text-xl font-semibold tracking-tight text-zinc-800">
@@ -217,6 +234,61 @@ export default function AboutPage() {
           </a>.
         </p>
       </section>
+
+      <hr className="border-zinc-200" />
+
+      {/* Citing Section */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900">Citing PHILHARMONIC</h2>
+        <p className="text-sm text-zinc-600 leading-relaxed">
+          If you use PHILHARMONIC, its network predictions, or functional clusters in your research, including through this database,
+          please cite our preprint available on{" "}
+          <a 
+            href="https://www.biorxiv.org/content/10.1101/2024.10.25.620267v3" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-emerald-800 font-semibold underline decoration-emerald-800/40 hover:text-emerald-950 hover:decoration-emerald-950 transition-colors"
+          >
+            bioRxiv
+          </a>:
+        </p>
+
+        {/* Standard Formatted Citation Layout */}
+        <div className="bg-zinc-50 border border-zinc-200/60 rounded-lg p-4 text-sm text-zinc-700 leading-relaxed shadow-sm">
+          <span className="font-medium text-zinc-900">
+            Sledzieski, S., Versavel, C., Singh, R., Ocitti, F., Devkota, K., Kumar, L., Shpilker, P., Roger, L., Yang, J., Lewinski, N., Putnam, H., Klein-Seetharaman, J., Berger, B., & Cowen, L.
+          </span>{" "}
+          (2024). Decoding the Functional Interactome of Non-Model Organisms with PHILHARMONIC.{" "}
+          <span className="italic text-zinc-600">bioRxiv</span>, 2024.10.25.620267; doi:{" "}
+          <a 
+            href="https://doi.org/10.1101/2024.10.25.620267" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-emerald-700 hover:underline font-mono text-xs"
+          >
+            https://doi.org/10.1101/2024.10.25.620267
+          </a>
+        </div>
+
+        {/* BibTeX Code Snippet Block */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider block">
+            BibTeX Entry
+          </label>
+          <pre className="bg-zinc-950 text-zinc-200 font-mono text-xs p-4 rounded-lg overflow-x-auto shadow-inner select-all leading-5 border border-zinc-800">
+            {`@article{sledzieski2024philharmonic,
+              author    = {Sledzieski, Samuel and Versavel, Charlotte and Singh, Rohit and Ocitti, Faith and Devkota, Kapil and Kumar, Lokender and Shpilker, Polina and Roger, Liza and Yang, Jinkyu and Lewinski, Nastassja and Putnam, Hollie and Klein-Seetharaman, Judith and Berger, Bonnie and Cowen, Lenore},
+              title     = {Decoding the Functional Interactome of Non-Model Organisms with PHILHARMONIC},
+              elocation-id = {2024.10.25.620267},
+              year      = {2024},
+              doi       = {10.1101/2024.10.25.620267},
+              publisher = {Cold Spring Harbor Laboratory},
+              journal   = {bioRxiv}
+            }`}
+          </pre>
+        </div>
+      </section>
+
     </div>
   );
 }

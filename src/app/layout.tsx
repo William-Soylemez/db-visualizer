@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import Image from "next/image"; 
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,10 +29,18 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <header className="border-b border-zinc-200 bg-white">
-          <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+          <div className="mx-auto max-w-6xl px-6 py-1 flex items-center justify-between">
             {/* Branding Details */}
             <div className="flex items-center gap-3">
-              <Link href="/" className="text-lg font-semibold tracking-tight">
+              <Link href="/" className="flex items-center flex-row gap-2.5 text-lg font-semibold tracking-tight group">
+                <Image 
+                    src="/philharmonicDB/philharmonic_logo.png" 
+                    alt="PHILHARMONIC Logo" 
+                    width={50} 
+                    height={50} 
+                    className="object-contain shrink-0"
+                    priority
+                  />
                 PHILHARMONIC<span className="text-emerald-600"> DB</span>
               </Link>
               <span className="text-sm text-zinc-400 hidden sm:inline">
