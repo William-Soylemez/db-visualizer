@@ -93,7 +93,7 @@ function SpeciesContent() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link href="/" className="text-sm text-emerald-600 hover:underline">
+          <Link href="/species-list" className="text-sm text-emerald-600 hover:underline">
             ← All species
           </Link>
 {/* Big Header Text: Common (Scientific/Display Name) */}

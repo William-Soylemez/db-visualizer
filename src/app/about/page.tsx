@@ -65,7 +65,7 @@ export default function AboutPage() {
 
         <p className="text-zinc-600 leading-relaxed text-sm">
           To browse the list of available species, <a 
-              href="/" 
+              href="/species-list" 
               className="text-emerald-600 hover:underline"
             >
               click here

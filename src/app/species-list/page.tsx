@@ -42,7 +42,7 @@ function SpeciesListContent() {
             {cladedFilter ? `Clade: ${cladedFilter}` : "All Species Directory"}
           </h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Showing {filteredSpecies.length} of {species.length} total indexed target groups
+            Showing {filteredSpecies.length} of {species.length} total species
           </p>
         </div>
         {cladedFilter && (

@@ -18,6 +18,7 @@ function HomeContent() {
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({
     "Eukaryota": true // Start with the top level pre-expanded
   });
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -53,12 +54,54 @@ function HomeContent() {
       });
   }, []);
 
-  const toggleNode = (nodeName: string) => {
-    setExpandedNodes((prev) => ({ ...prev, [nodeName]: !prev[nodeName] }));
-  };  
+// Feature 1: Recursive single-child expansion engine
+  const toggleNodeWithAutoExpand = (nodeName: string, targetNode: TaxonomyNode) => {
+    setExpandedNodes((prev) => {
+      const next = { ...prev, [nodeName]: !prev[nodeName] };
+      
+      // Only auto-expand downwards if we are *opening* the node
+      if (next[nodeName]) {
+        let current = targetNode;
+        // Keep descending and opening as long as there is exactly one sub-clade
+        while (Object.keys(current.children).length === 1) {
+          const singleChildName = Object.keys(current.children)[0];
+          next[singleChildName] = true;
+          current = current.children[singleChildName];
+        }
+      }
+      return next;
+    });
+  };
+
+  // Feature 2: Extract unique clades from dataset for search indices
+  const allUniqueClades = Array.from(
+    new Set(species.flatMap((s) => s.lineage || []))
+  ).map((cladeName) => {
+    const totalCount = species.filter((s) => s.lineage?.includes(cladeName)).length;
+    return { name: cladeName, count: totalCount };
+  });
+
+  // Filter both groups against the current search query string
+  const cleanQuery = searchQuery.trim().toLowerCase();
+  
+  const filteredClades = cleanQuery
+    ? allUniqueClades.filter((c) => c.name.toLowerCase().includes(cleanQuery))
+    : [];
+
+  const filteredSpecies = cleanQuery
+    ? species.filter(
+        (s) =>
+          s.id.toLowerCase().includes(cleanQuery) ||
+          (s.common_name && s.common_name.toLowerCase().includes(cleanQuery)) ||
+          (s.display_name && s.display_name.toLowerCase().includes(cleanQuery))
+      )
+    : [];
+
+  const hasSearchResults = filteredClades.length > 0 || filteredSpecies.length > 0;
 
   // Recursive tree layout compiler component
   const RenderTaxonomyBranch = ({ node, depth = 0 }: { node: TaxonomyNode; depth: number }) => {
+    const childKeys = Object.keys(node.children);    
     const hasChildren = Object.keys(node.children).length > 0;
     const isExpanded = expandedNodes[node.name];
 
@@ -67,7 +110,7 @@ function HomeContent() {
         <div className="flex items-center justify-between py-2 border-b border-zinc-100/60 hover:bg-zinc-50/50 px-2 rounded-md transition">
           <div 
             className="flex items-center gap-2 cursor-pointer flex-1" 
-            onClick={() => hasChildren && toggleNode(node.name)}
+            onClick={() => hasChildren && toggleNodeWithAutoExpand(node.name, node)}
           >
             {hasChildren ? (
               <span className="text-zinc-400 font-mono text-xs w-4">
@@ -137,6 +180,92 @@ function HomeContent() {
           inspect their predicted functions and GO annotations, and drill down to
           individual genes.
         </p>
+      </section>
+
+      {/* Unified Search Engine Bar */}
+      <section className="max-w-xl space-y-2 relative">
+        <label className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          Search Database
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search by species common name, scientific name, accession, or clade..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-lg border border-zinc-200 pl-10 pr-4 py-2 text-sm bg-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
+          />
+          <span className="absolute left-3.5 top-2.5 text-zinc-400 font-mono text-sm pointer-events-none">
+            🔍
+          </span>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-2.5 text-zinc-400 hover:text-zinc-600 text-xs"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Dynamic Search Results Dropdown Overlay */}
+        {searchQuery.trim() !== "" && (
+          <div className="absolute z-10 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg max-h-80 overflow-y-auto divide-y divide-zinc-100">
+            {!hasSearchResults && (
+              <div className="p-4 text-sm text-zinc-500 italic text-center">
+                No matching clades or species found for "{searchQuery}"
+              </div>
+            )}
+
+            {/* Matching Clades Section */}
+            {filteredClades.length > 0 && (
+              <div className="p-2 bg-zinc-50/50">
+                <div className="px-2 py-1 text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+                  Matching Clades
+                </div>
+                {filteredClades.slice(0, 5).map((clade) => (
+                  <Link
+                    key={clade.name}
+                    href={`/species-list?clade=${encodeURIComponent(clade.name)}`}
+                    onClick={() => setSearchQuery("")}
+                    className="flex justify-between items-center text-sm px-2 py-1.5 rounded hover:bg-emerald-50 text-zinc-800 hover:text-emerald-900 transition"
+                  >
+                    <span className="font-medium">{clade.name}</span>
+                    <span className="text-xs text-zinc-400">{clade.count} species →</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Matching Species Section */}
+            {filteredSpecies.length > 0 && (
+              <div className="p-2">
+                <div className="px-2 py-1 text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+                  Matching Species
+                </div>
+                {filteredSpecies.slice(0, 10).map((s) => {
+                  const hasCommon = s.common_name && s.common_name.trim() !== "";
+                  return (
+                    <Link
+                      key={s.id}
+                      href={`/species?id=${s.id}`}
+                      onClick={() => setSearchQuery("")}
+                      className="block px-2 py-2 rounded hover:bg-emerald-50 text-left transition"
+                    >
+                      <div className="text-sm font-medium text-zinc-900 line-clamp-1">
+                        {hasCommon ? s.common_name : s.display_name}
+                      </div>
+                      <div className="text-xs text-zinc-500 font-mono flex gap-1.5 items-center mt-0.5">
+                        <span className="uppercase">{s.id}</span>
+                        {hasCommon && <span className="italic text-zinc-400">({s.display_name})</span>}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Dynamic Taxonomy Browser Module Layout */}
