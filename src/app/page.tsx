@@ -4,10 +4,20 @@ import Link from "next/link";
 import { useEffect, useState, Suspense } from "react"; // 2. Add React hooks for mounting client state
 import { fetchSpeciesIndex } from "@/lib/data";
 
+interface TaxonomyNode {
+  name: string;
+  count: number;
+  children: Record<string, TaxonomyNode>;
+}
+
 // 3. Shift the structural rendering logic into a regular sub-component
 function HomeContent() {
   // 4. Set reactive state values for async lifecycle tracking
   const [species, setSpecies] = useState<any[]>([]);
+  const [taxonomyTree, setTaxonomyTree] = useState<TaxonomyNode | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({
+    "Eukaryota": true // Start with the top level pre-expanded
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -16,6 +26,24 @@ function HomeContent() {
     fetchSpeciesIndex()
       .then((data) => {
         setSpecies(data);
+        // Build the runtime hierarchical taxonomy structure directly from data
+        const root: TaxonomyNode = { name: "All", count: data.length, children: {} };
+        
+        data.forEach((item) => {
+          if (!item.lineage || item.lineage.length === 0) return;
+          
+          let current = root;
+          item.lineage.forEach((clade: string) => {
+            if (!current.children[clade]) {
+              current.children[clade] = { name: clade, count: 0, children: {} };
+            }
+            current.children[clade].count += 1;
+            current = current.children[clade];
+          });
+        });
+
+        // Set the primary curated branch point root
+        setTaxonomyTree(root);        
         setLoading(false);
       })
       .catch((err) => {
@@ -24,6 +52,60 @@ function HomeContent() {
         setLoading(false);
       });
   }, []);
+
+  const toggleNode = (nodeName: string) => {
+    setExpandedNodes((prev) => ({ ...prev, [nodeName]: !prev[nodeName] }));
+  };  
+
+  // Recursive tree layout compiler component
+  const RenderTaxonomyBranch = ({ node, depth = 0 }: { node: TaxonomyNode; depth: number }) => {
+    const hasChildren = Object.keys(node.children).length > 0;
+    const isExpanded = expandedNodes[node.name];
+
+    return (
+      <div className="select-none">
+        <div className="flex items-center justify-between py-2 border-b border-zinc-100/60 hover:bg-zinc-50/50 px-2 rounded-md transition">
+          <div 
+            className="flex items-center gap-2 cursor-pointer flex-1" 
+            onClick={() => hasChildren && toggleNode(node.name)}
+          >
+            {hasChildren ? (
+              <span className="text-zinc-400 font-mono text-xs w-4">
+                {isExpanded ? "▼" : "▶"}
+              </span>
+            ) : (
+              <span className="w-4" />
+            )}
+            <span className={`text-sm ${hasChildren ? "font-medium text-zinc-800" : "text-zinc-600"}`}>
+              {node.name}
+            </span>
+            <span className="text-xs bg-zinc-100 text-zinc-500 font-medium px-1.5 py-0.5 rounded-full">
+              {node.count} species
+            </span>
+          </div>
+
+          <Link 
+            href={`/species-list?clade=${encodeURIComponent(node.name)}`}
+            className="text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:underline px-2 py-1"
+          >
+            View list →
+          </Link>
+        </div>
+
+        {hasChildren && isExpanded && (
+          <div className="ml-4 pl-3 border-l border-zinc-200 mt-1 space-y-1">
+            {Object.values(node.children).map((childBranch) => (
+              <RenderTaxonomyBranch 
+                key={childBranch.name} 
+                node={childBranch} 
+                depth={depth + 1} 
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // 6. Handle ongoing transmission states elegantly
   if (loading) return <div className="p-8 text-zinc-500">Loading species directory...</div>;
@@ -57,46 +139,20 @@ function HomeContent() {
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">
-          Species ({species.length})
-        </h2>
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {species.map((s) => {
-            const hasCommon = s.common_name && s.common_name.trim() !== "";
-            // Primary big text is always common name if available, otherwise the display name
-            const primaryName = hasCommon ? s.common_name : s.display_name;
-
-            return (
-              <li key={s.id}>
-                <Link
-                  href={`/species?id=${s.id}`}
-                  className="block rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-emerald-400 hover:shadow-sm h-full flex flex-col justify-between"
-                >
-                  <div>
-                    {/* Big Text: Common Name or Scientific Name */}
-                    <div className="font-semibold text-base text-zinc-900 tracking-tight line-clamp-1">
-                      {primaryName}
-                    </div>
-                    
-                    {/* Subtitle: Only show Scientific Name here if a common name exists to push it down */}
-                    {hasCommon && (
-                      <div className="mt-0.5 text-xs text-zinc-500 italic line-clamp-1">
-                        {s.display_name}
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Accession ID Footer: ALWAYS Monospace, never italicized */}
-                  <div className="mt-2 font-mono text-[10px] text-zinc-400 tracking-wider uppercase">
-                    {s.id}
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+      {/* Dynamic Taxonomy Browser Module Layout */}
+      <section className="space-y-4 max-w-3xl">
+        <div className="border-b border-zinc-200 pb-2">
+          <h2 className="text-lg font-semibold text-zinc-900">Browse by Taxonomy</h2>
+          <p className="text-xs text-zinc-500">Click clades to expand phylogenetic relationships.</p>
+        </div>
+        
+        <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-sm">
+          {taxonomyTree && Object.values(taxonomyTree.children).map((topLevelClade) => (
+            <RenderTaxonomyBranch key={topLevelClade.name} node={topLevelClade} depth={0} />
+          ))}
+        </div>
       </section>
+
     </div>
   );
 }

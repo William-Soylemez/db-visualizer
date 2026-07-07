@@ -41,6 +41,9 @@ export default function RootLayout({
 
             {/* Top Navigation Links */}
             <nav className="flex items-center gap-6 text-sm font-medium">
+            <Link href="/species-list" className="hover:text-emerald-600 transition">
+              Species List
+            </Link>              
               <Link 
                 href="/about" 
                 className="text-zinc-600 hover:text-emerald-600 transition-colors"
