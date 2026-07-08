@@ -94,26 +94,42 @@ let selectedProtein = proteinsData[accession];
         <Link href={`/species?id=${id}`} className="text-sm text-emerald-600 hover:underline">
           ← {id}
         </Link>
-        <h1 className="mt-1 font-mono text-2xl font-semibold tracking-tight">
-          {protein.accession}
+        {/* Updated Title Block to support name (accession) styling splitting */}
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-900">
+          {protein.name ? (
+            <>
+              <span className="font-sans mr-2">{protein.name}</span>
+              <span className="font-mono text-xl font-normal text-zinc-500">
+                ({protein.accession})
+              </span>
+            </>
+          ) : (
+            <span className="font-mono">{protein.accession}</span>
+          )}
         </h1>
-        <div className="mt-2 flex flex-wrap gap-3 text-sm">
+
+        <div className="mt-2 flex flex-wrap gap-3 text-sm items-center">
           <a
             href={protein.ncbi_url}
             target="_blank"
             rel="noreferrer"
-            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400"
+            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400 font-medium text-zinc-700 transition-colors"
           >
             NCBI protein ↗
           </a>
-          {/* 11. FIXED: Point cluster lookups directly to matching static query route */}
-          {protein.cluster_hash && (
+
+          {/* Conditional Cluster Assignment Check */}
+          {protein.cluster_hash ? (
             <Link
               href={`/species/cluster?id=${id}&hash=${protein.cluster_hash}`}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400"
+              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400 font-medium text-zinc-700 transition-colors"
             >
               View cluster ↗
             </Link>
+          ) : (
+            <span className="rounded-md border border-dashed border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-500 cursor-default select-none">
+              Unassigned to a cluster
+            </span>
           )}
         </div>
       </div>
