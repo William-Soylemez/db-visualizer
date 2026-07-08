@@ -9,6 +9,7 @@ import {
   fetchGeneIndex,
   fetchSpeciesManifest,
   fetchSpeciesIndex,
+  fetchProteins,
 } from "@/lib/data";
 import { functionColor } from "@/lib/color";
 import { topKEdgesPerNode } from "@/lib/graph";
@@ -29,6 +30,7 @@ function SpeciesContent() {
   const [summaries, setSummaries] = useState<any>(null);
   const [graph, setGraph] = useState<any>(null);
   const [geneIndex, setGeneIndex] = useState<any>(null);
+  const [proteinsCatalog, setProteinsCatalog] = useState<any>(null);
 
   // 7. Trigger network fetch sequentially or via Promise.all when the page mounts
   useEffect(() => {
@@ -43,8 +45,9 @@ function SpeciesContent() {
       fetchClusterSummaries(id),
       fetchClusterGraph(id),
       fetchGeneIndex(id),
+      fetchProteins(id),
     ])
-      .then(([manifestData, indexData, summariesData, graphData, geneIndexData]) => {
+      .then(([manifestData, indexData, summariesData, graphData, geneIndexData, proteinsCatalogData]) => {
         const indexMatch = indexData.find((s: any) => s.id === id);
         // Create a patched manifest by layering the index metadata over it
         const patchedManifest = {
@@ -60,6 +63,7 @@ function SpeciesContent() {
         setSummaries(summariesData);
         setGraph(graphData);
         setGeneIndex(geneIndexData);
+        setProteinsCatalog(proteinsCatalogData); // 2. Track the catalog in state        
         setLoading(false);
       })
       .catch((err) => {
@@ -174,7 +178,7 @@ function SpeciesContent() {
         })()}
       </div>
 
-      <GeneSearch speciesId={id} geneIndex={geneIndex} />
+      <GeneSearch speciesId={id} geneIndex={geneIndex} proteinsCatalog={proteinsCatalog}/>
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">
