@@ -48,13 +48,14 @@ function GeneContent() {
         setGoMap(goMapData);
 
       // Resolve organism taxonomic metadata from the master species manifest
-        const meta = speciesIndexData?.[id];
+        const indexArray = speciesIndexData as any[];
+        const meta = indexArray?.find((s: any) => String(s.id).trim() === String(id).trim());
         if (meta) {
           setSpeciesMeta({
             common: meta.common_name || undefined,
-            scientific: meta.scientific_name || undefined,
+            scientific: meta.display_name || undefined,
           });
-        }
+        } 
 
         setLoading(false);
 

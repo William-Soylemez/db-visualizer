@@ -85,25 +85,28 @@ function HomeContent() {
     };
 
   // Highlight matching text helper (Simpler, standard text flow version)
-  const highlightMatch = (text: string, query: string) => {
-    if (!query) return text;
-    const cleanQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const parts = text.split(new RegExp(`(${cleanQuery})`, 'gi'));
-    
-    return (
-      <span className="inline">
-        {parts.map((part, i) => 
-          part.toLowerCase() === query.toLowerCase() ? (
-            <mark key={i} className="bg-emerald-100 text-emerald-950 font-medium px-0 rounded-none inline">
-              {part}
-            </mark>
-          ) : (
-            part
-          )
-        )}
-      </span>
-    );
-  };
+  const highlightMatch = (text: string, search: string) => {
+  // FIX: Trim whitespace from the search query to keep highlighting stable with trailing spaces
+  const cleanSearch = search.trim();
+  if (!cleanSearch) return text;
+  
+  const escapedQuery = cleanSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
+  
+  return (
+    <span className="inline">
+      {parts.map((part, i) => 
+        part.toLowerCase() === cleanSearch.toLowerCase() ? (
+          <mark key={i} className="bg-emerald-100 text-emerald-950 font-medium px-0 rounded-none inline">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+};
     
   // Feature 2: Extract unique clades from dataset for search indices
   const allUniqueClades = Array.from(
