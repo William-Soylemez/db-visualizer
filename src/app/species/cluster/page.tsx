@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation"; // 2. Swapped notFound for query params hook
 import { useEffect, useState, Suspense } from "react"; // 3. Added for tracking local state
-import { fetchClusterDetail, fetchGoTerms } from "@/lib/data";
+import { fetchClusterDetail, fetchGoTerms, fetchProteins } from "@/lib/data";
 import { goName, goUrl } from "@/lib/go";
 import NetworkGraph, { type GraphNode } from "@/components/NetworkGraph";
 import Expandable from "@/components/Expandable";
@@ -19,7 +19,7 @@ function ClusterContent() {
   const [error, setError] = useState(false);
   const [cluster, setCluster] = useState<any>(null);
   const [goMap, setGoMap] = useState<any>(null);
-
+  const [proteinsCatalog, setProteinsCatalog] = useState<any>(null); // New catalog dictionary state
   // 8. Fetch data inside browser when component mounts or search params change
   useEffect(() => {
     if (!id || !hash) return;
@@ -27,10 +27,11 @@ function ClusterContent() {
     setLoading(true);
     setError(false);
 
-    Promise.all([fetchClusterDetail(id, hash), fetchGoTerms()])
-      .then(([clusterData, goMapData]) => {
+    Promise.all([fetchClusterDetail(id, hash), fetchGoTerms(), fetchProteins(id)])
+      .then(([clusterData, goMapData, proteinsCatalogData]) => {
         setCluster(clusterData);
         setGoMap(goMapData);
+        setProteinsCatalog(proteinsCatalogData);        
         setLoading(false);
       })
       .catch((err) => {
@@ -43,7 +44,7 @@ function ClusterContent() {
   // 9. Handle initial boundary states
   if (!id || !hash) return <div className="p-8 text-zinc-500">Missing query parameters (id and hash required).</div>;
   if (loading) return <div className="p-8 text-zinc-500">Loading cluster detail...</div>;
-  if (error || !cluster) return <div className="p-8 text-red-500">Cluster or taxonomy data failed to load.</div>;
+  if (error || !cluster || !proteinsCatalog) return <div className="p-8 text-red-500">Cluster or taxonomy data failed to load.</div>;
 
   // 10. Process downstream graph formats (using flat query path mappings)
   const nodes: GraphNode[] = cluster.members.map((m: any) => ({
@@ -157,21 +158,29 @@ function ClusterContent() {
             Proteins ({cluster.members.length})
           </h2>
           <Expandable initial={15}>
-            {cluster.members.map((m: any) => (
-              <div key={m.accession} className="border-b border-zinc-100 py-1.5 text-sm">
-                {/* 13. FIXED: Adjusted link string formatting to match query paradigm */}
-                <Link
-                  href={`/species/gene?id=${id}&accession=${encodeURIComponent(m.accession)}`}
-                  className="font-mono text-emerald-700 hover:underline"
-                >
-                  {m.accession}
-                </Link>
-                <span className="ml-2 text-xs text-zinc-400">
-                  {m.go_terms.length} GO
-                </span>
-              </div>
-            ))}
-          </Expandable>
+            {cluster.members.map((m: any) => {
+              // Extract data directly from the newly added master proteins catalog map
+              const masterProtein = proteinsCatalog[m.accession] || {};
+              const proteinName = masterProtein.name || "No descriptive protein name indexed";
+              
+              // Fall back gracefully to cluster-specific arrays if the master catalog isn't pruned yet
+              const goCount = masterProtein.go_terms ? masterProtein.go_terms.length : (m.go_terms?.length || 0);
+
+              return (
+                <div key={m.accession} className="border-b border-zinc-100 py-1.5 text-sm">
+                  <Link
+                    href={`/species/gene?id=${id}&accession=${encodeURIComponent(m.accession)}`}
+                    className="font-mono text-emerald-700 hover:underline"
+                    title={proteinName} // Uses the cross-referenced name for hover text
+                  >
+                    {m.accession}
+                  </Link>
+                  <span className="ml-2 text-xs text-zinc-400">
+                    {goCount} GO
+                  </span>
+                </div>
+              );
+            })}          </Expandable>
         </div>
       </section>
 
