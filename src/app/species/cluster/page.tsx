@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation"; // 2. Swapped notFound for query params hook
 import { useEffect, useState, Suspense } from "react"; // 3. Added for tracking local state
-import { fetchClusterDetail, fetchGoTerms, fetchProteins } from "@/lib/data";
+import { fetchClusterDetail, fetchGoTerms, fetchProteins, fetchSpeciesIndex } from "@/lib/data";
 import { goName, goUrl } from "@/lib/go";
 import NetworkGraph, { type GraphNode } from "@/components/NetworkGraph";
 import Expandable from "@/components/Expandable";
@@ -20,6 +20,8 @@ function ClusterContent() {
   const [cluster, setCluster] = useState<any>(null);
   const [goMap, setGoMap] = useState<any>(null);
   const [proteinsCatalog, setProteinsCatalog] = useState<any>(null); // New catalog dictionary state
+const [speciesMeta, setSpeciesMeta] = useState<{ common?: string; scientific?: string } | null>(null);
+
   // 8. Fetch data inside browser when component mounts or search params change
   useEffect(() => {
     if (!id || !hash) return;
@@ -27,11 +29,21 @@ function ClusterContent() {
     setLoading(true);
     setError(false);
 
-    Promise.all([fetchClusterDetail(id, hash), fetchGoTerms(), fetchProteins(id)])
-      .then(([clusterData, goMapData, proteinsCatalogData]) => {
+    Promise.all([fetchClusterDetail(id, hash), fetchGoTerms(), fetchProteins(id), fetchSpeciesIndex()])
+      .then(([clusterData, goMapData, proteinsCatalogData, speciesIndexData]) => {
         setCluster(clusterData);
         setGoMap(goMapData);
-        setProteinsCatalog(proteinsCatalogData);        
+        setProteinsCatalog(proteinsCatalogData);    
+
+        // Resolve species naming from the master index using the accession ID
+        const meta = speciesIndexData?.[id];
+        if (meta) {
+          setSpeciesMeta({
+            common: meta.common_name || undefined,
+            scientific: meta.scientific_name || undefined,
+          });
+        }
+
         setLoading(false);
       })
       .catch((err) => {
@@ -73,8 +85,29 @@ function ClusterContent() {
             </span>
           )}
         </div>
-        <p className="mt-1 font-mono text-xs text-zinc-400">cluster {cluster.hash}</p>
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-500">
+        {/* Meta Line: Displays cluster hash and cross-referenced species identifier */}
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-mono text-zinc-400">
+          <span>cluster {cluster.hash}</span>
+            {speciesMeta && (speciesMeta.common || speciesMeta.scientific) && (
+            <>
+              <span className="text-zinc-300 select-none">•</span>
+              <span className="font-sans text-zinc-500 font-medium">
+                {speciesMeta.common && speciesMeta.scientific ? (
+                  <>
+                    {speciesMeta.common}{" "}
+                    <span className="italic text-zinc-400 font-normal">
+                      ({speciesMeta.scientific})
+                    </span>
+                  </>
+                ) : speciesMeta.scientific ? (
+                  <span className="italic">{speciesMeta.scientific}</span>
+                ) : (
+                  <span>{speciesMeta.common}</span>
+                )}
+              </span>
+            </>
+          )}
+        </div>          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-500">
           <span>{cluster.size} proteins</span>
           <span>{cluster.edges} edges</span>
           <span>{cluster.triangles} triangles</span>

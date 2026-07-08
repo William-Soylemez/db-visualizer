@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation"; // 2. Migrated away from notFound/params
 import { useEffect, useState, Suspense } from "react"; // 3. Added hook extensions for local state
-import { fetchGoTerms, fetchProteins } from "@/lib/data";
+import { fetchGoTerms, fetchProteins, fetchSpeciesIndex } from "@/lib/data";
 import { goName, goUrl } from "@/lib/go";
 import Expandable from "@/components/Expandable";
 
@@ -20,7 +20,8 @@ function GeneContent() {
   const [protein, setProtein] = useState<any>(null);
   const [goMap, setGoMap] = useState<any>(null);
   const [pfamMap, setPfamMap] = useState<Record<string, string>>({});
-
+  const [speciesMeta, setSpeciesMeta] = useState<{ common?: string; scientific?: string } | null>(null);
+  
   // 8. Execute browser fetch sequence upon interface mounting
   useEffect(() => {
     if (!id || !accession) return;
@@ -28,9 +29,9 @@ function GeneContent() {
     setLoading(true);
     setError(false);
 
-    Promise.all([fetchProteins(id), fetchGoTerms()])
-      .then(([proteinsData, goMapData]) => {
-let selectedProtein = proteinsData[accession];
+    Promise.all([fetchProteins(id), fetchGoTerms(), fetchSpeciesIndex()])
+      .then(([proteinsData, goMapData, speciesIndexData]) => {
+        let selectedProtein = proteinsData[accession];
         
         // TEMPORARY FALLBACK: Until the pipeline is updated, handle missing keys gracefully
         if (!selectedProtein) {
@@ -45,6 +46,16 @@ let selectedProtein = proteinsData[accession];
         
         setProtein(selectedProtein);
         setGoMap(goMapData);
+
+      // Resolve organism taxonomic metadata from the master species manifest
+        const meta = speciesIndexData?.[id];
+        if (meta) {
+          setSpeciesMeta({
+            common: meta.common_name || undefined,
+            scientific: meta.scientific_name || undefined,
+          });
+        }
+
         setLoading(false);
 
         // Fetch Pfam details asynchronously only if any exist
@@ -94,7 +105,7 @@ let selectedProtein = proteinsData[accession];
         <Link href={`/species?id=${id}`} className="text-sm text-emerald-600 hover:underline">
           ← {id}
         </Link>
-        {/* Updated Title Block to support name (accession) styling splitting */}
+        {/* Title Block: Name (Accession) */}
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-900">
           {protein.name ? (
             <>
@@ -108,7 +119,26 @@ let selectedProtein = proteinsData[accession];
           )}
         </h1>
 
-        <div className="mt-2 flex flex-wrap gap-3 text-sm items-center">
+        {/* NEW: Fancy Species Taxonomic Sub-Header Line */}
+        {speciesMeta && (speciesMeta.common || speciesMeta.scientific) && (
+          <div className="mt-1.5 text-sm font-medium text-zinc-500">
+            {speciesMeta.common && speciesMeta.scientific ? (
+              <>
+                {speciesMeta.common}{" "}
+                <span className="italic text-zinc-400 font-normal">
+                  ({speciesMeta.scientific})
+                </span>
+              </>
+            ) : speciesMeta.scientific ? (
+              <span className="italic">{speciesMeta.scientific}</span>
+            ) : (
+              <span>{speciesMeta.common}</span>
+            )}
+          </div>
+        )}
+
+        {/* Action Utility Navigation Buttons Block */}
+        <div className="mt-4 flex flex-wrap gap-3 text-sm items-center">
           <a
             href={protein.ncbi_url}
             target="_blank"
@@ -118,7 +148,6 @@ let selectedProtein = proteinsData[accession];
             NCBI protein ↗
           </a>
 
-          {/* Conditional Cluster Assignment Check */}
           {protein.cluster_hash ? (
             <Link
               href={`/species/cluster?id=${id}&hash=${protein.cluster_hash}`}
