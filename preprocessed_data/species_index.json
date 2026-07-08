@@ -1,100 +1,220 @@
 [{"id":"GCA_014872705.1","display_name":"Agaricus bisporus var. burnettii","taxid":192524,
  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Dikarya","Basidiomycota"],
  "common_name":"cultivated mushroom","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_014872705.1/"},
+  
  {"id":"GCF_000001215.4","display_name":"Drosophila melanogaster","taxid":7227,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Arthropoda"],
   "common_name":"fruit fly","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001215.4/"},
+  
  {"id":"GCF_000001735.4","display_name":"Arabidopsis thaliana","taxid":3702,
   "lineage":["Eukaryota","Archaeplastida","Viridiplantae","Angiosperms","Eudicots"],
   "common_name":"thale cress","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001735.4/"},
+  
  {"id":"GCF_000002235.5","display_name":"Strongylocentrotus purpuratus","taxid":7668,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Echinodermata"],
   "common_name":"purple sea urchin","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002235.5/"},
+  
  {"id":"GCF_000002425.5","display_name":"Physcomitrium patens","taxid":3218,
   "lineage":["Eukaryota","Archaeplastida","Viridiplantae","Bryopsida"],
   "common_name":"spreading earthmoss","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002425.5/"},
+  
  {"id":"GCF_000002765.6","display_name":"Plasmodium falciparum 3D7","taxid":36329,
   "lineage":["Eukaryota","SAR","Alveolata","Apicomplexa"],
   "common_name":"malaria parasite","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002765.6/"},
+  
  {"id":"GCF_000002985.6","display_name":"Caenorhabditis elegans","taxid":6239,
  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Nematoda"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002985.6/"},
+  
  {"id":"GCF_000004195.4","display_name":"Xenopus tropicalis","taxid":8364,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Chordata","Amphibia"],
   "common_name":"western clawed frog","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000004195.4/"},
+  
  {"id":"GCF_000004695.1","display_name":"Dictyostelium discoideum AX4","taxid":352472,
   "lineage":["Eukaryota","Amoebozoa","Dictyostelia"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000004695.1/"},
+  
  {"id":"GCF_000090985.2","display_name":"Micromonas commoda","taxid":296587,
   "lineage":["Eukaryota","Archaeplastida","Viridiplantae","Chlorophyta"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000090985.2/"},
+  
  {"id":"GCF_000091205.1","display_name":"Cyanidioschyzon merolae strain 10D","taxid":280699,
   "lineage":["Eukaryota","Archaeplastida","Rhodophyta"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000091205.1/"},
+  
  {"id":"GCF_000142905.1","display_name":"Thecamonas trahens ATCC 50062","taxid":461836,
   "lineage":["Eukaryota","Apusomonadida"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000142905.1/"},
+  
  {"id":"GCF_000146045.2","display_name":"Saccharomyces cerevisiae S288C","taxid":559292,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Dikarya","Ascomycota"],
   "common_name":"baker's yeast","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000146045.2/"},
+  
  {"id":"GCF_000146465.1","display_name":"Encephalitozoon intestinalis ATCC 50506","taxid":876142,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Microsporidia"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000146465.1/"},
+  
  {"id":"GCF_000149245.1","display_name":"Cryptococcus neoformans H99","taxid":235443,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Dikarya","Basidiomycota"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000149245.1/"},
+  
  {"id":"GCF_000151315.2","display_name":"Capsaspora owczarzaki ATCC 30864","taxid":595528,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Filasterea"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000151315.2/"},
+  
  {"id":"GCF_000165425.1","display_name":"Paramecium tetraurelia","taxid":5888,
   "lineage":["Eukaryota","SAR","Alveolata","Ciliophora"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000165425.1/"},
+  
  {"id":"GCF_000188695.1","display_name":"Salpingoeca rosetta","taxid":946362,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Choanoflagellata"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000188695.1/"},
+  
  {"id":"GCF_000203795.2","display_name":"Batrachochytrium dendrobatidis JAM81","taxid":684364,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Chytridiomycota"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000203795.2/"},
+  
  {"id":"GCF_000208925.1","display_name":"Entamoeba histolytica HM-1:IMSS","taxid":294381,
   "lineage":["Eukaryota","Amoebozoa","Entamoebidae"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000208925.1/"},
+  
  {"id":"GCF_000210295.1","display_name":"Trypanosoma brucei gambiense DAL972","taxid":679716,
   "lineage":["Eukaryota","Discoba","Euglenozoa","Kinetoplastida"],
   "common_name":"sleeping sickness parasite","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000210295.1/"},
+  
  {"id":"GCF_000313135.1","display_name":"Acanthamoeba castellanii str. Neff","taxid":1257118,
   "lineage":["Eukaryota","Amoebozoa","Acanthamoebidae"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000313135.1/"},
+  
  {"id":"GCF_000350225.1","display_name":"Chondrus crispus","taxid":2769,
   "lineage":["Eukaryota","Archaeplastida","Rhodophyta"],
   "common_name":"carrageenan moss","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000350225.1/"},
+  
  {"id":"GCF_000372725.1","display_name":"Emiliania huxleyi CCMP1516","taxid":280463,
   "lineage":["Eukaryota","Haptophyta"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000372725.1/"},
+  
  {"id":"GCF_000388065.1","display_name":"Fonticula alba","taxid":691883,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Rotosphaerida"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000388065.1/"},
+  
  {"id":"GCF_001186125.1","display_name":"Sphaeroforma arctica JP610","taxid":667725,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Ichthyosporea"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_001186125.1/"},
+  
  {"id":"GCF_002263795.3","display_name":"Bos taurus","taxid":9910,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Chordata","Mammalia"],
   "common_name":"domestic cattle","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_002263795.3/"},
+  
  {"id":"GCF_016699485.2","display_name":"Gallus gallus","taxid":9031,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Chordata","Aves"],
   "common_name":"chicken","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_016699485.2/"},
+  
  {"id":"GCF_025024165.1","display_name":"Kickxella alabastrina","taxid":61397,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Kickxellomycota"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_025024165.1/"},
+  
  {"id":"GCF_034140825.1","display_name":"Oryza sativa Japonica Group","taxid":null,
   "lineage":["Eukaryota","Archaeplastida","Viridiplantae","Angiosperms","Monocots"],
   "common_name":"rice","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_034140825.1/"},
+  
  {"id":"GCF_049306965.1","display_name":"Danio rerio","taxid":7955,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Chordata","Actinopterygii"],
   "common_name":"zebrafish","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_049306965.1/"},
+  
  {"id":"GCF_932526225.1","display_name":"Nematostella vectensis","taxid":45351,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Cnidaria"],
   "common_name":"starlet sea anemone","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_932526225.1/"},
+  
  {"id":"GCF_963853765.1","display_name":"Magallana gigas","taxid":29159,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Mollusca"],
-  "common_name":"Pacific oyster","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_963853765.1/"}
+  "common_name":"Pacific oyster","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_963853765.1/"},
+
+ {"id":"GCA_001460835.1","display_name":"Bodo saltans","taxid":75058,
+  "lineage":["Eukaryota","Discoba","Euglenozoa","Kinetoplastida"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001460835.1/"},
+  
+ {"id":"GCA_008330645.1","display_name":"Cafeteria roenbergensis","taxid":33653,
+  "lineage":["Eukaryota","SAR","Stramenopiles","Bigyra"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_008330645.1/"},
+  
+ {"id":"GCA_026419775.2","display_name":"Acrasis kona","taxid":1008807,
+  "lineage":["Eukaryota","Discoba","Heterolobosea"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_026419775.2/"},
+  
+ {"id":"GCA_036867785.1","display_name":"Plasmodiophora brassicae","taxid":37360,
+  "lineage":["Eukaryota","SAR","Rhizaria","Endomyxa"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_036867785.1/"},
+  
+ {"id":"GCA_041296205.1","display_name":"Prymnesium parvum","taxid":97485,
+  "lineage":["Eukaryota","Haptophyta"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_041296205.1/"},
+  
+ {"id":"GCF_000002435.2","display_name":"Giardia duodenalis","taxid":5741,
+  "lineage":["Eukaryota","Discoba","Metamonada","Diplomonadida"],
+  "common_name":"giardiasis parasite","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002435.2/"},
+  
+ {"id":"GCF_000002725.2","display_name":"Leishmania major strain Friedlin","taxid":347515,
+  "lineage":["Eukaryota","Discoba","Euglenozoa","Kinetoplastida"],
+  "common_name":"leishmaniasis parasite","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000002725.2/"},
+  
+ {"id":"GCF_000006565.2","display_name":"Toxoplasma gondii ME49","taxid":508771,
+  "lineage":["Eukaryota","SAR","Alveolata","Apicomplexa"],
+  "common_name":"toxoplasmosis parasite","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000006565.2/"},
+  
+ {"id":"GCF_000147115.1","display_name":"Myotis lucifugus","taxid":59463,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Chordata","Mammalia"],
+  "common_name":"little brown bat","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000147115.1/"},
+  
+ {"id":"GCF_000149405.2","display_name":"Thalassiosira pseudonana CCMP1335","taxid":296543,
+  "lineage":["Eukaryota","SAR","Stramenopiles","Bacillariophyta"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000149405.2/"},
+  
+ {"id":"GCF_000151545.1","display_name":"Saprolegnia parasitica CBS 223.65","taxid":695850,
+  "lineage":["Eukaryota","SAR","Stramenopiles","Oomycetes"],
+  "common_name":"saprolegniosis parasite","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000151545.1/"},
+  
+ {"id":"GCF_000151665.1","display_name":"Blastocystis hominis","taxid":12968,
+  "lineage":["Eukaryota","SAR","Stramenopiles","Bigyra"],
+  "common_name":"name","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000151665.1/"},
+  
+ {"id":"GCF_000237925.1","display_name":"Schistosoma mansoni","taxid":6183,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Platyhelminthes"],
+  "common_name":"S. mansoni blood fluke","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000237925.1/"},
+  
+ {"id":"GCF_000326865.2","display_name":"Helobdella robusta","taxid":6412,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Annelida"],
+  "common_name":"H. robsuta leech","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000326865.2/"},
+  
+ {"id":"GCF_001039355.2","display_name":"Lingula anatina","taxid":7574,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Brachiopoda"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_001039355.2/"},
+  
+ {"id":"GCF_001643675.1","display_name":"Monocercomonoides exilis","taxid":null,
+  "lineage":["Eukaryota","Discoba","Metamonada","Preaxostyla"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_001643675.1/"},
+  
+ {"id":"GCF_004359215.1","display_name":"Bremia lactucae","taxid":4779,
+  "lineage":["Eukaryota","SAR","Stramenopiles","Oomycetes"],
+  "common_name":"lettuce downy mildew","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_004359215.1/"},
+  
+ {"id":"GCF_008403515.1","display_name":"Naegleria fowleri","taxid":5763,
+  "lineage":["Eukaryota","Discoba","Heterolobosea"],
+  "common_name":"brain-eating amoeba","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_008403515.1/"},
+  
+ {"id":"GCF_018991925.1","display_name":"Homarus americanus","taxid":6706,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Arthropoda"],
+  "common_name":"American lobster","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_018991925.1/"},
+  
+ {"id":"GCF_038396675.1","display_name":"Hydra vulgaris","taxid":6087,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Cnidaria"],
+  "common_name":"swiftwater hydra","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_038396675.1/"},
+  
+ {"id":"GCF_048771995.1","display_name":"Taeniopygia guttata","taxid":59729,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Chordata","Aves"],
+  "common_name":"zebra finch","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_048771995.1/"},
+  
+ {"id":"GCF_963678635.1","display_name":"Symsagittifera roscoffensis","taxid":84072,
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Xenacoelomorpha"],
+  "common_name":"mint-sauce worm","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_963678635.1/"}
 ]
