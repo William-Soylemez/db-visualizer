@@ -132,7 +132,7 @@
   "common_name":"western clawed frog","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000004195.4/"},
 
   {"id":"GCF_002263795.3","display_name":"Bos taurus","taxid":9910,
-  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Deuterostomia","Chordata","Mammalia"],
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Mammalia"],
   "common_name":"domestic cattle","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_002263795.3/"},  
 
   {"id":"GCF_000147115.1","display_name":"Myotis lucifugus","taxid":59463,
