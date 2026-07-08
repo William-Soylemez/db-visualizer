@@ -333,7 +333,7 @@ function HomeContent() {
                         {hasCommon ? highlightMatch(s.common_name, searchQuery) : highlightMatch(s.display_name, searchQuery)}
                       </div>
                       <div className="text-xs text-zinc-500 font-mono flex gap-1.5 items-center mt-0.5">
-                        <span className="uppercase">{s.id}</span>
+                        <span className="uppercase">{highlightMatch(s.id, searchQuery)}</span>
                         {hasCommon && <span className="italic text-zinc-400">({highlightMatch(s.display_name, searchQuery)})</span>}
                       </div>
                     </Link>
