@@ -11,7 +11,7 @@ import {
   fetchSpeciesIndex,
   fetchProteins,
 } from "@/lib/data";
-import { functionColor } from "@/lib/color";
+import { ALL_CATEGORIES, categoryColors } from "@/lib/color";
 import { topKEdgesPerNode } from "@/lib/graph";
 import ClusterList from "@/components/ClusterList";
 import GeneSearch from "@/components/GeneSearch";
@@ -81,13 +81,18 @@ function SpeciesContent() {
   }
 
   // 9. Process network graphing variables precisely like before
+  // Color by the LLM cluster name, which lives on the summaries, not the
+  // meta-graph nodes — join the two on the cluster hash.
+  const titleByHash = new Map<string, string>(
+    summaries.map((c: any): [string, string] => [c.hash, c.title]),
+  );
   const nodes: GraphNode[] = graph.nodes.map((n: any) => ({
     id: n.id,
     size: n.size,
-    color: functionColor(n.top_function),
+    colors: categoryColors(titleByHash.get(n.id)),
     href: `/species/cluster?id=${id}&hash=${n.id}`, // 10. FIXED: Changed route format to query string
   }));
-  
+
 
   // The meta-graph is too dense to read (avg degree ~32); show each cluster's
   // strongest links only so the backbone is legible.
@@ -186,10 +191,21 @@ function SpeciesContent() {
         </h2>
         <p className="text-sm text-zinc-500">
           Each node is a cluster, sized by protein count and colored by predicted
-          function. Showing each cluster&rsquo;s strongest links only. Click a node to
-          open it.
+          function. Clusters spanning several themes are split proportionally.
+          Showing each cluster&rsquo;s strongest links only. Click a node to open it.
         </p>
         <NetworkGraph nodes={nodes} edges={displayEdges} height={520} />
+        <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+          {ALL_CATEGORIES.map((c) => (
+            <li key={c.key} className="flex items-center gap-1.5 text-xs text-zinc-600">
+              <span
+                className="inline-block h-3 w-3 rounded-full border border-black/10"
+                style={{ backgroundColor: c.color }}
+              />
+              {c.label}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="space-y-3">
