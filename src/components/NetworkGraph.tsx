@@ -9,8 +9,32 @@ export type GraphNode = {
   label?: string;
   size?: number; // relative node weight
   color?: string;
+  colors?: string[]; // multi-category nodes render as an even pie split
   href?: string; // navigate here on click
 };
+
+// Cytoscape needs a fixed set of pie slice selectors declared up front.
+const MAX_PIE_SLICES = 7;
+
+// Per-node pie data: even slices for each color, unused slices sized to 0.
+function pieData(colors: string[]): Record<string, string | number> {
+  const cols = colors.length ? colors : ["#10b981"];
+  const n = Math.min(cols.length, MAX_PIE_SLICES);
+  const size = 100 / n;
+  const d: Record<string, string | number> = {};
+  for (let i = 1; i <= MAX_PIE_SLICES; i++) {
+    d[`pc${i}`] = cols[i - 1] ?? "#000000";
+    d[`ps${i}`] = i <= n ? size : 0;
+  }
+  return d;
+}
+
+// Static pie-slice selectors, wired to the per-node data() fields above.
+const pieSliceStyle: Record<string, string> = {};
+for (let i = 1; i <= MAX_PIE_SLICES; i++) {
+  pieSliceStyle[`pie-${i}-background-color`] = `data(pc${i})`;
+  pieSliceStyle[`pie-${i}-background-size`] = `data(ps${i})`;
+}
 
 export type GraphEdge = {
   source: string;
@@ -46,15 +70,19 @@ export default function NetworkGraph({ nodes, edges, height = 460 }: Props) {
       maxS === minS ? 26 : 16 + (40 * (s - minS)) / (maxS - minS);
 
     const elements: ElementDefinition[] = [
-      ...nodes.map((n) => ({
-        data: {
-          id: n.id,
-          label: n.label ?? "",
-          color: n.color ?? "#10b981",
-          diameter: scale(n.size ?? 1),
-          href: n.href ?? "",
-        },
-      })),
+      ...nodes.map((n) => {
+        const colors = n.colors?.length ? n.colors : n.color ? [n.color] : [];
+        return {
+          data: {
+            id: n.id,
+            label: n.label ?? "",
+            color: colors[0] ?? "#10b981",
+            diameter: scale(n.size ?? 1),
+            href: n.href ?? "",
+            ...pieData(colors),
+          },
+        };
+      }),
       ...edges.map((e, i) => ({
         data: {
           id: `e${i}`,
@@ -79,6 +107,7 @@ export default function NetworkGraph({ nodes, edges, height = 460 }: Props) {
           {
             selector: "node",
             style: {
+              // Fallback fill; the pie (slices sum to 100%) covers it.
               "background-color": "data(color)",
               width: "data(diameter)",
               height: "data(diameter)",
@@ -88,8 +117,11 @@ export default function NetworkGraph({ nodes, edges, height = 460 }: Props) {
               "text-valign": "bottom",
               "text-margin-y": 3,
               "min-zoomed-font-size": 8,
+              "pie-size": "100%",
+              ...pieSliceStyle,
             },
-          },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any,
           {
             selector: "edge",
             style: {
