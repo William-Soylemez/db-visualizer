@@ -137,7 +137,7 @@
 
   {"id":"GCF_964187855.1","display_name":"Myxine glutinosa","taxid":7769,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Cyclostomata"],
-  "common_name":"Atlantic hagfish","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_964187855.1/"}
+  "common_name":"Atlantic hagfish","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_964187855.1/"},
 
   {"id":"GCF_048934315.1","display_name":"Petromyzon marinus","taxid":7757,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Cyclostomata"],
