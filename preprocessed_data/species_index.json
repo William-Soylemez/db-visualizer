@@ -141,7 +141,7 @@
 
   {"id":"GCF_048934315.1","display_name":"Petromyzon marinus","taxid":7757,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Cyclostomata"],
-  "common_name":"Japanese pufferfish (torafugu)","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_048934315.1/"},  
+  "common_name":"sea lamprey","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_048934315.1/"},  
   
   {"id":"GCF_017639515.1","display_name":"Carcharodon carcharias","taxid":13397,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Gnathostomata","Chondrichthyes"],
@@ -152,8 +152,8 @@
   "common_name":"zebrafish","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_049306965.1/"},
 
   {"id":"GCF_901000725.3","display_name":"Takifugu rubripes","taxid":31033,
-  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Actinopterygii"],
-  "common_name":"pufferfish","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_901000725.3/"},
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Gnathostomata","Actinopterygii"],
+  "common_name":"Japanese pufferfish (torafugu)","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_901000725.3/"},
 
   {"id":"GCF_000004195.4","display_name":"Xenopus tropicalis","taxid":8364,
   "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Gnathostomata","Amphibia"],
@@ -196,7 +196,7 @@
   "common_name":"domestic cattle","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_002263795.3/"},  
 
   {"id":"GCF_041296265.1","display_name":"Equus caballus","taxid":9796,
-  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Mammalia","Laurasiatheria"],
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Deuterostomia","Chordata","Mammalia","Gnathostomata","Laurasiatheria"],
   "common_name":"horse","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_041296265.1/"},
 
   {"id":"GCF_000147115.1","display_name":"Myotis lucifugus","taxid":59463,
@@ -256,7 +256,7 @@
   "common_name":"California two-spot octopus","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_001194135.2/"},
 
   {"id":"GCA_050947105.1","display_name":"Ancylostoma duodenale","taxid":51022,
-  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Protosomia","Nematoda"],
+  "lineage":["Eukaryota","Opisthokonta","Holozoa","Metazoa","Bilateria","Protostomia","Nematoda"],
   "common_name":"Old World hookworm","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_050947105.1/"},  
 
   {"id":"GCF_000002985.6","display_name":"Caenorhabditis elegans","taxid":6239,
@@ -329,7 +329,7 @@
 
   {"id":"GCF_000151665.1","display_name":"Blastocystis hominis","taxid":12968,
   "lineage":["Eukaryota","SAR","Stramenopiles","Bigyra"],
-  "common_name":"name","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000151665.1/"},
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000151665.1/"},
 
  {"id":"GCA_008330645.1","display_name":"Cafeteria roenbergensis","taxid":33653,
   "lineage":["Eukaryota","SAR","Stramenopiles","Bigyra"],
