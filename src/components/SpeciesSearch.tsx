@@ -19,11 +19,21 @@ export interface SearchState {
 interface SpeciesSearchProps {
   species: SpeciesItem[];
   onSearchStateChange?: (state: SearchState) => void;
+  enableTaxonomy?: boolean;
+  destination?: "species" | "go";
+  goTermId?: string;
+  placeholder?: string;
+  showLabel?: boolean;
 }
 
 export default function SpeciesSearch({
   species,
   onSearchStateChange,
+  enableTaxonomy = true,
+  destination = "species",
+  goTermId,
+  placeholder,
+  showLabel = true,
 }: SpeciesSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -31,7 +41,16 @@ export default function SpeciesSearch({
   const cleanQuery = searchQuery.trim().toLowerCase();
   const isActiveSearch = isSearchFocused && cleanQuery !== "";
 
-  // Pass comprehensive state upstream to parent whenever search state changes
+  // 1. Always keep species sorted alphabetically by scientific / display name
+  const sortedSpecies = useMemo(() => {
+    return [...species].sort((a, b) => {
+      const nameA = a.display_name || a.id;
+      const nameB = b.display_name || b.id;
+      return nameA.localeCompare(nameB);
+    });
+  }, [species]);
+
+  // Pass state upstream whenever search state changes
   useEffect(() => {
     onSearchStateChange?.({
       searchQuery,
@@ -40,35 +59,44 @@ export default function SpeciesSearch({
     });
   }, [searchQuery, isSearchFocused, isActiveSearch, onSearchStateChange]);
 
-  // Extract unique clades from dataset for search indexing
+  // 2. Extract unique clades (skipped if enableTaxonomy is false)
   const allUniqueClades = useMemo(() => {
+    if (!enableTaxonomy) return [];
     return Array.from(
-      new Set(species.flatMap((s) => s.lineage || []))
+      new Set(sortedSpecies.flatMap((s) => s.lineage || []))
     ).map((cladeName) => {
-      const totalCount = species.filter((s) => s.lineage?.includes(cladeName)).length;
+      const totalCount = sortedSpecies.filter((s) => s.lineage?.includes(cladeName)).length;
       return { name: cladeName, count: totalCount };
     });
-  }, [species]);
+  }, [sortedSpecies, enableTaxonomy]);
 
   // Filter clades and species against current query string
   const filteredClades = useMemo(() => {
-    if (!cleanQuery) return [];
+    if (!enableTaxonomy || !cleanQuery) return [];
     return allUniqueClades.filter((c) => c.name.toLowerCase().includes(cleanQuery));
-  }, [allUniqueClades, cleanQuery]);
+  }, [allUniqueClades, cleanQuery, enableTaxonomy]);
 
   const filteredSpecies = useMemo(() => {
     if (!cleanQuery) return [];
-    return species.filter(
+    return sortedSpecies.filter(
       (s) =>
         s.id.toLowerCase().includes(cleanQuery) ||
         (s.common_name && s.common_name.toLowerCase().includes(cleanQuery)) ||
         (s.display_name && s.display_name.toLowerCase().includes(cleanQuery))
     );
-  }, [species, cleanQuery]);
+  }, [sortedSpecies, cleanQuery]);
 
   const hasSearchResults = filteredClades.length > 0 || filteredSpecies.length > 0;
 
-  // Highlight matching text helper with trim safety
+  // Build target href based on destination prop
+  const getSpeciesHref = (s: SpeciesItem) => {
+    if (destination === "go" && goTermId) {
+      return `/species/go?id=${s.id}&go=${encodeURIComponent(goTermId)}`;
+    }
+    return `/species?id=${s.id}`;
+  };
+
+  // Highlight matching text helper
   const highlightMatch = (text: string, search: string) => {
     const cleanSearch = search.trim();
     if (!cleanSearch) return text;
@@ -94,21 +122,26 @@ export default function SpeciesSearch({
     );
   };
 
+  const defaultPlaceholder = enableTaxonomy
+    ? "Search by species common name, scientific name, accession, or clade..."
+    : "Search by species common name, scientific name, or accession...";
+
   return (
-    <section className="max-w-xl space-y-2 relative">
-      <label className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-        Search Database
-      </label>
+    <section className="w-full space-y-2 relative">
+      {showLabel && (
+        <label className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+          Search Database
+        </label>
+      )}
       <div className="relative">
         <input
           type="text"
-          placeholder="Search by species common name, scientific name, accession, or clade..."
+          placeholder={placeholder || defaultPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsSearchFocused(true)}
-          // 200ms timeout ensures link clicks inside the dropdown register before focus is lost
           onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-          className="w-full rounded-lg border border-zinc-200 pl-10 pr-4 py-2 text-sm bg-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
+          className="w-full rounded-lg border border-zinc-200 pl-10 pr-10 py-2 text-sm bg-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
         />
         <span className="absolute left-3.5 top-2.5 text-zinc-400 font-mono text-sm pointer-events-none">
           🔍
@@ -117,7 +150,7 @@ export default function SpeciesSearch({
           <button
             type="button"
             onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-2.5 text-zinc-400 hover:text-zinc-600 text-xs"
+            className="absolute right-3 top-2.5 text-zinc-400 hover:text-zinc-600 text-xs font-medium"
           >
             Clear
           </button>
@@ -126,15 +159,15 @@ export default function SpeciesSearch({
 
       {/* Dynamic Search Results Dropdown Overlay */}
       {isActiveSearch && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg max-h-80 overflow-y-auto divide-y divide-zinc-100">
+        <div className="absolute left-0 z-20 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg max-h-80 overflow-y-auto divide-y divide-zinc-100">
           {!hasSearchResults && (
             <div className="p-4 text-sm text-zinc-500 italic text-center">
-              No matching clades or species found for "{searchQuery}"
+              No matching species {enableTaxonomy ? "or clades" : ""} found for &ldquo;{searchQuery}&rdquo;
             </div>
           )}
 
-          {/* Matching Clades Section */}
-          {filteredClades.length > 0 && (
+          {/* Matching Clades Section (Disabled if enableTaxonomy={false}) */}
+          {enableTaxonomy && filteredClades.length > 0 && (
             <div className="p-2 bg-zinc-50/50">
               <div className="px-2 py-1 text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
                 Matching Clades
@@ -160,15 +193,17 @@ export default function SpeciesSearch({
           {/* Matching Species Section */}
           {filteredSpecies.length > 0 && (
             <div className="p-2">
-              <div className="px-2 py-1 text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
-                Matching Species
-              </div>
+              {enableTaxonomy && (
+                <div className="px-2 py-1 text-[10px] font-bold uppercase text-zinc-400 tracking-wider">
+                  Matching Species
+                </div>
+              )}
               {filteredSpecies.slice(0, 10).map((s) => {
                 const hasCommon = s.common_name && s.common_name.trim() !== "";
                 return (
                   <Link
                     key={s.id}
-                    href={`/species?id=${s.id}`}
+                    href={getSpeciesHref(s)}
                     onClick={() => setSearchQuery("")}
                     className="block px-2 py-2 rounded hover:bg-zinc-200/70 text-left transition-colors duration-100"
                   >

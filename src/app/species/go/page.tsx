@@ -10,12 +10,12 @@ import {
   fetchClusterSummaries,
 } from "@/lib/data";
 import { goUrl } from "@/lib/go";
+import SpeciesSearch from "@/components/SpeciesSearch";
 
 function GoTermContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Query parameters: ?id=species_id&go=GO:0008150&hash=cluster_hash (optional highlight)
   const id = searchParams.get("id");
   const go = searchParams.get("go");
   const targetClusterHash = searchParams.get("hash") || searchParams.get("cluster");
@@ -112,7 +112,17 @@ function GoTermContent() {
           count: proteins.length,
         };
       })
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => {
+        const aIsUnassigned = a.hash === "unassigned";
+        const bIsUnassigned = b.hash === "unassigned";
+
+        // Push unassigned to the bottom regardless of protein count
+        if (aIsUnassigned && !bIsUnassigned) return 1;
+        if (!aIsUnassigned && bIsUnassigned) return -1;
+
+        // Otherwise sort assigned clusters descending by count
+        return b.count - a.count;
+      });
   }, [matchingProteins, clustersMap]);
 
   // 3. Initialize collapse/expand states based on incoming navigation target
@@ -192,38 +202,32 @@ function GoTermContent() {
             )}
           </div>
         )}
-
         {/* AmiGO link & Species Selector */}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-b border-zinc-100 pb-4">
           <a
             href={goUrl(go)}
             target="_blank"
             rel="noreferrer"
-            className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400 font-medium text-sm text-zinc-700 transition-colors"
+            className="shrink-0 rounded-md border border-zinc-200 bg-white px-3 py-1.5 hover:border-emerald-400 font-medium text-sm text-zinc-700 transition-colors"
           >
             AmiGO 2 term page ↗
           </a>
 
-          <div className="flex items-center gap-2 text-sm text-zinc-600">
-            <label htmlFor="species-select" className="font-medium text-xs uppercase tracking-wide text-zinc-500">
-              Switch species:
+          {/* flex-1 lets this container grow to the left; max-w-md or max-w-lg keeps it comfortable on ultra-wide screens */}
+          <div className="flex flex-1 items-center justify-end gap-2 text-sm text-zinc-600 max-w-lg">
+            <label htmlFor="species-select" className="shrink-0 font-medium text-xs uppercase tracking-wide text-zinc-500">
+            Switch species:
             </label>
-            <select
-              id="species-select"
-              value={id}
-              onChange={(e) => {
-                if (e.target.value) {
-                  router.push(`/species/go?id=${e.target.value}&go=${encodeURIComponent(go)}`);
-                }
-              }}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-800 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-            >
-              {speciesList.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.common_name ? `${s.common_name} (${s.display_name || s.id})` : s.display_name || s.id}
-                </option>
-              ))}
-            </select>
+            <div className="flex-1 min-w-[200px]">
+              <SpeciesSearch
+                species={speciesList}
+                enableTaxonomy={false}
+                destination="go"
+                goTermId={go}
+                showLabel={false}
+                placeholder="Switch species..."
+              />
+            </div>
           </div>
         </div>
       </div>

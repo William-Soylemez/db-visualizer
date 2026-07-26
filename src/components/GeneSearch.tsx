@@ -96,7 +96,7 @@ export default function GeneSearch({
     if (result.type === "protein") {
       router.push(`/species/gene?id=${speciesId}&accession=${encodeURIComponent(result.accession)}`);
     } else {
-      router.push(`/species/go?id=${speciesId}&term=${encodeURIComponent(result.id)}`);
+      router.push(`/species/go?id=${speciesId}&go=${encodeURIComponent(result.id)}`);
     }
   };
 
