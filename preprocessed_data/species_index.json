@@ -83,9 +83,13 @@
   "lineage":["Eukaryota","Haptophyta"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_041296205.1/"},
 
-  {"id":"GCF_000203795.2","display_name":"Batrachochytrium dendrobatidis JAM81","taxid":684364,
-  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Chytridiomycota"],
-  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000203795.2/"},
+  {"id":"GCF_000182965.3","display_name":"Candida albicans SC531","taxid":237561,
+  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Dikarya","Ascomycota"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000182965.3/"},
+  
+  {"id":"GCF_000182925.2","display_name":"Neurospora crassa OR74A","taxid":367110,
+  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Dikarya","Ascomycota"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000182925.2/"},
 
   {"id":"GCF_000146045.2","display_name":"Saccharomyces cerevisiae S288C","taxid":559292,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Dikarya","Ascomycota"],
@@ -103,9 +107,21 @@
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Glomeromycota"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026210795.1/"},
 
+  {"id":"GCF_025094135.1","display_name":"Mucor mucedo","taxid":29922,
+  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Mucoromycota"],
+  "common_name":"common pinmould","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_025094135.1/"},
+
   {"id":"GCF_025024165.1","display_name":"Kickxella alabastrina","taxid":61397,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Kickxellomycota"],
   "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_025024165.1/"},  
+
+  {"id":"GCA_025594325.1","display_name":"Blastocladiella emersonii ATCC 2266","taxid":1313167,
+  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Blastocladiomycetes"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_025594325.1/"},
+
+  {"id":"GCF_000203795.2","display_name":"Batrachochytrium dendrobatidis JAM81","taxid":684364,
+  "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Chytridiomycota"],
+  "common_name":"","assembly_url":"https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000203795.2/"},
 
   {"id":"GCF_000146465.1","display_name":"Encephalitozoon intestinalis ATCC 50506","taxid":876142,
   "lineage":["Eukaryota","Opisthokonta","Holomycota","Fungi","Microsporidia"],
