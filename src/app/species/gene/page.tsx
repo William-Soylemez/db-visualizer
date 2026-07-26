@@ -179,15 +179,13 @@ function GeneContent() {
 
                 return (
                   <div key={gid} className="border-b border-zinc-100 py-1.5 text-sm flex items-baseline gap-2">
-                    {/* The GO ID is ALWAYS the link */}
-                    <a
-                      href={goUrl(gid)}
-                      target="_blank"
-                      rel="noreferrer"
+                    {/* The GO ID links internally to the GO term page */}
+                    <Link
+                      href={`/species/go?id=${id}&go=${encodeURIComponent(gid)}${protein.cluster_hash ? `&hash=${protein.cluster_hash}` : ""}`}
                       className="font-mono font-medium text-emerald-700 hover:underline"
                     >
                       {gid}
-                    </a>
+                    </Link>
                     
                     {/* The full term name follows in gray only if it exists */}
                     {termName && (

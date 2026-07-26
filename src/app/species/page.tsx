@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation"; // 2. Changed from notFound/params
-import { useEffect, useState, Suspense } from "react"; // 3. Added for client side state
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import {
   fetchClusterGraph,
   fetchClusterSummaries,
@@ -10,6 +10,7 @@ import {
   fetchSpeciesManifest,
   fetchSpeciesIndex,
   fetchProteins,
+  fetchGoTerms,
 } from "@/lib/data";
 import { ALL_CATEGORIES, categoryColors } from "@/lib/color";
 import { topKEdgesPerNode } from "@/lib/graph";
@@ -17,13 +18,11 @@ import ClusterList from "@/components/ClusterList";
 import GeneSearch from "@/components/GeneSearch";
 import NetworkGraph, { type GraphNode } from "@/components/NetworkGraph";
 
-// 4. Change component definition: remove async, remove old typescript types
-
 function SpeciesContent() {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id"); // 5. Extracts ?id= from URL
-
-  // 6. Define states to hold the asynchronously fetched data
+  const id = searchParams.get("id"); //Extracts ?id= from URL
+  
+  // Define states to hold the asynchronously fetched data
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [manifest, setManifest] = useState<any>(null);
@@ -31,8 +30,9 @@ function SpeciesContent() {
   const [graph, setGraph] = useState<any>(null);
   const [geneIndex, setGeneIndex] = useState<any>(null);
   const [proteinsCatalog, setProteinsCatalog] = useState<any>(null);
-
-  // 7. Trigger network fetch sequentially or via Promise.all when the page mounts
+  const [goTermsCatalog, setGoTermsCatalog] = useState<any>(null); // FIXED: Added missing state
+  
+  //Trigger network fetch sequentially or via Promise.all when the page mounts
   useEffect(() => {
     if (!id) return;
 
@@ -46,8 +46,9 @@ function SpeciesContent() {
       fetchClusterGraph(id),
       fetchGeneIndex(id),
       fetchProteins(id),
+      fetchGoTerms(), // FIXED: Fetch global GO terms dictionary
     ])
-      .then(([manifestData, indexData, summariesData, graphData, geneIndexData, proteinsCatalogData]) => {
+      .then(([manifestData, indexData, summariesData, graphData, geneIndexData, proteinsCatalogData, goTermsData]) => {
         const indexMatch = indexData.find((s: any) => s.id === id);
         // Create a patched manifest by layering the index metadata over it
         const patchedManifest = {
@@ -63,7 +64,8 @@ function SpeciesContent() {
         setSummaries(summariesData);
         setGraph(graphData);
         setGeneIndex(geneIndexData);
-        setProteinsCatalog(proteinsCatalogData); // 2. Track the catalog in state        
+        setProteinsCatalog(proteinsCatalogData);
+        setGoTermsCatalog(goTermsData); // FIXED: Set GO terms dictionary
         setLoading(false);
       })
       .catch((err) => {
@@ -73,14 +75,14 @@ function SpeciesContent() {
       });
   }, [id]);
 
-  // 8. Handle intermediate edge states
+  //Handle intermediate edge states
   if (!id) return <div className="p-8 text-zinc-500">No Species ID provided in URL parameters.</div>;
   if (loading) return <div className="p-8 text-zinc-500">Loading species data...</div>;
   if (error || !manifest || !summaries || !graph || !geneIndex) {
     return <div className="p-8 text-red-500">Species data not found. Check connection or data parameters.</div>;
   }
 
-  // 9. Process network graphing variables precisely like before
+  //Process network graphing variables
   // Color by the LLM cluster name, which lives on the summaries, not the
   // meta-graph nodes — join the two on the cluster hash.
   const titleByHash = new Map<string, string>(
@@ -90,9 +92,8 @@ function SpeciesContent() {
     id: n.id,
     size: n.size,
     colors: categoryColors(titleByHash.get(n.id)),
-    href: `/species/cluster?id=${id}&hash=${n.id}`, // 10. FIXED: Changed route format to query string
+    href: `/species/cluster?id=${id}&hash=${n.id}`,
   }));
-
 
   // The meta-graph is too dense to read (avg degree ~32); show each cluster's
   // strongest links only so the backbone is legible.
@@ -105,7 +106,7 @@ function SpeciesContent() {
           <Link href="/species-list" className="text-sm text-emerald-600 hover:underline">
             ← All species
           </Link>
-{/* Big Header Text: Common (Scientific/Display Name) */}
+          {/* Big Header Text: Common (Scientific/Display Name) */}
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-900">
             {manifest.common_name || manifest.display_name}{" "}
             {manifest.common_name && (
@@ -114,7 +115,6 @@ function SpeciesContent() {
               </span>
             )}
           </h1>
-          
           {/* Database & Taxonomy Metadata Badges Link Row */}
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
             {manifest.assembly_url && (
@@ -146,20 +146,17 @@ function SpeciesContent() {
             )}
           </div>
 
-          {/* Counts Line (Preserved exactly) */}
           <p className="mt-3 text-sm text-zinc-500">
             {manifest.n_clusters.toLocaleString()} clusters ·{" "}
             {manifest.n_proteins.toLocaleString()} proteins
           </p>
         </div>
         {manifest.has_network_download && (() => {
-          // Construct same-origin absolute paths relative to the web root
           const networkDownloadUrl = `/philharmonicDB/preprocessed_data/species/${manifest.id}/raw/network.positive.tsv.gz`;
           const medfordDownloadUrl = `/philharmonicDB/preprocessed_data/species/${manifest.id}/${manifest.id}.mfd`;
 
           return (
             <div className="flex flex-row items-center gap-2">
-              {/* Left Button: Download MEDFORD */}
               <a
                 href={medfordDownloadUrl}
                 download={`${manifest.id}.mfd`}
@@ -169,7 +166,6 @@ function SpeciesContent() {
                 Download MEDFORD
               </a>
 
-              {/* Right Button: Download Network */}
               <a
                 href={networkDownloadUrl}
                 download={`network.${manifest.id}.positive.tsv.gz`}
@@ -183,7 +179,12 @@ function SpeciesContent() {
         })()}
       </div>
 
-      <GeneSearch speciesId={id} geneIndex={geneIndex} proteinsCatalog={proteinsCatalog}/>
+      <GeneSearch 
+        speciesId={id} 
+        geneIndex={geneIndex} 
+        proteinsCatalog={proteinsCatalog}
+        goTermsCatalog={goTermsCatalog}
+      />
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500">

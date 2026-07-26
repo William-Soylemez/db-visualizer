@@ -59,6 +59,7 @@ export type ClusterDetail = {
 
 export type ProteinDetail = {
   accession: string;
+  name?: string; // Add optional name field
   pfam: string[];
   go_terms: string[];
   cluster_hash: string | null;

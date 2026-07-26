@@ -159,15 +159,13 @@ const [speciesMeta, setSpeciesMeta] = useState<{ common?: string; scientific?: s
                 >
                   {/* Left group: Link ID + Gray Name descriptor */}
                   <div className="flex items-baseline gap-2 min-w-0">
-                    {/* The GO ID is ALWAYS the clickable link */}
-                    <a
-                      href={goUrl(gid)}
-                      target="_blank"
-                      rel="noreferrer"
+                    {/* The GO ID links internally to the GO term page */}
+                    <Link
+                      href={`/species/go?id=${id}&go=${encodeURIComponent(gid)}${hash ? `&hash=${hash}` : ""}`}
                       className="font-mono font-medium text-emerald-700 hover:underline shrink-0"
                     >
                       {gid}
-                    </a>
+                    </Link>
                     
                     {/* The full term name follows in gray if it exists */}
                     {termName && (
