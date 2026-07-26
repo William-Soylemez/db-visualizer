@@ -56,7 +56,7 @@ export default function AboutPage() {
             >
               Bonnie Berger
             </a>) at MIT,
-          the Bioinformaics and Computational Biology Group (PI: {" "}
+          the Bioinformatics and Computational Biology Group (PI: {" "}
             <a 
               href="https://www.cs.tufts.edu/~cowen/" 
               target="_blank" 
@@ -242,7 +242,7 @@ export default function AboutPage() {
         <h2 className="text-xl font-semibold tracking-tight text-zinc-900">Citing PHILHARMONIC</h2>
         <p className="text-sm text-zinc-600 leading-relaxed">
           If you use PHILHARMONIC, its network predictions, or functional clusters in your research, including through this database,
-          please cite our preprint available on{" "}
+          please cite our RECOMB 2025 paper, available as a preprint on{" "}
           <a 
             href="https://www.biorxiv.org/content/10.1101/2024.10.25.620267v3" 
             target="_blank" 
@@ -253,7 +253,7 @@ export default function AboutPage() {
           </a>:
         </p>
 
-        {/* Standard Formatted Citation Layout */}
+        {/* Standard Formatted Citation Layout 
         <div className="bg-zinc-50 border border-zinc-200/60 rounded-lg p-4 text-sm text-zinc-700 leading-relaxed shadow-sm">
           <span className="font-medium text-zinc-900">
             Sledzieski, S., Versavel, C., Singh, R., Ocitti, F., Devkota, K., Kumar, L., Shpilker, P., Roger, L., Yang, J., Lewinski, N., Putnam, H., Klein-Seetharaman, J., Berger, B., & Cowen, L.
@@ -268,6 +268,23 @@ export default function AboutPage() {
           >
             https://doi.org/10.1101/2024.10.25.620267
           </a>
+        </div>*/}
+
+        {/* Standard Formatted Citation Layout */}
+        <div className="bg-zinc-50 border border-zinc-200/60 rounded-lg p-4 text-sm text-zinc-700 leading-relaxed shadow-sm">
+          <span className="font-medium text-zinc-900">
+            Sledzieski, S., Versavel, C., Singh, R., Ocitti, F., Devkota, K., Kumar, L., Shpilker, P., Roger, L., Yang, J., Lewinski, N., Putnam, H.,  Berger, B., Klein-Seetharaman, J., & Cowen, L.
+          </span>{" "}
+          (2025). Decoding the Functional Interactome of Non-Model Organisms with PHILHARMONIC.{" "}
+          in <span className="italic text-zinc-600">Research in Computational Molecular Biology</span>, pp. 268--272; doi:{" "}
+          <a 
+            href="https://doi.org/10.1007/978-3-031-90252-9_19" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-emerald-700 hover:underline font-mono text-xs"
+          >
+            https://doi.org/10.1007/978-3-031-90252-9_19
+          </a>
         </div>
 
         {/* BibTeX Code Snippet Block */}
@@ -276,7 +293,18 @@ export default function AboutPage() {
             BibTeX Entry
           </label>
           <pre className="bg-zinc-950 text-zinc-200 font-mono text-xs p-4 rounded-lg overflow-x-auto shadow-inner select-all leading-5 border border-zinc-800">
-            {`@article{sledzieski2024philharmonic,
+            {`@InProceedings{sledzieski2025philharmonic,
+              author    = {Sledzieski, Sam and Versavel, Charlotte and Singh, Rohit and Ocitti, Faith and Devkota, Kapil and Kumar, Lokender and Shpilker, Polina and Roger, Liza and Yang, Jinkyu and Lewinski, Nastassja and Putnam, Hollie and Berger, Bonnie and Klein-Seetharaman, Judith and Cowen, Lenore},
+              title     = {Decoding the Functional Interactome of Non-model Organisms with PHILHARMONIC},
+              booktitle = {Research in Computational Molecular Biology},
+              pages     = {268--272},
+              year      = {2025},
+              editor    = {Sankararaman, Sriram},
+              series    = {Lecture Notes in Computer Science},
+              volume    = {15647},
+              doi       = {10.1007/978-3-031-90252-9_19}
+            }`}
+            {/*`@article{sledzieski2024philharmonic,
               author    = {Sledzieski, Samuel and Versavel, Charlotte and Singh, Rohit and Ocitti, Faith and Devkota, Kapil and Kumar, Lokender and Shpilker, Polina and Roger, Liza and Yang, Jinkyu and Lewinski, Nastassja and Putnam, Hollie and Klein-Seetharaman, Judith and Berger, Bonnie and Cowen, Lenore},
               title     = {Decoding the Functional Interactome of Non-Model Organisms with PHILHARMONIC},
               elocation-id = {2024.10.25.620267},
@@ -284,7 +312,7 @@ export default function AboutPage() {
               doi       = {10.1101/2024.10.25.620267},
               publisher = {Cold Spring Harbor Laboratory},
               journal   = {bioRxiv}
-            }`}
+            }`*/}
           </pre>
         </div>
       </section>
